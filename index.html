@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Explorer's Tales - Podcast Player</title>
+    <title id="page-title">The Explorer's Tales - Podcast Player</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Roboto:wght@300;400;500&family=Noto+Sans+Devanagari:wght@400;700&display=swap');
 
         :root {
             --slate-800: #374151;
@@ -16,7 +16,7 @@
         }
 
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
             background-color: #1a1a1a;
             color: white;
             overflow-x: hidden;
@@ -24,6 +24,20 @@
 
         .font-heading {
             font-family: 'Oswald', sans-serif;
+        }
+
+        /* Language Selector Positioning */
+        .language-selector {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 50; /* Ensure it's above other content */
+        }
+
+        .lang-button.selected {
+            background-color: #fbbf24;
+            color: #1a1a1a;
+            font-weight: 700;
         }
 
         /* Waveform Animation */
@@ -80,6 +94,13 @@
 </head>
 <body class="h-screen w-full flex items-center justify-center bg-gray-900 p-0 md:p-8">
 
+    <!-- Language Selector -->
+    <div class="language-selector md:block hidden flex space-x-2 bg-gray-700 p-2 rounded-lg shadow-lg">
+        <button id="lang-en" onclick="setLanguage('en')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">English</button>
+        <button id="lang-hi" onclick="setLanguage('hi')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">हिन्दी</button>
+        <button id="lang-or" onclick="setLanguage('or')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">ଓଡ଼ିଆ</button>
+    </div>
+
     <!-- Main Card Container -->
     <div class="bg-slate-700 w-full max-w-6xl h-full md:h-[90vh] rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
         
@@ -88,11 +109,11 @@
             
             <!-- Header -->
             <div class="mb-6">
-                <h1 class="font-heading text-4xl md:text-5xl font-bold tracking-tight text-white mb-2 uppercase leading-none">
-                    The<br>Explorer's Tales
+                <h1 class="font-heading text-4xl md:text-5xl font-bold tracking-tight text-white mb-2 uppercase leading-none" id="main-title">
+                    <!-- Content set by JS -->
                 </h1>
-                <p class="text-[#fbbf24] text-lg font-medium tracking-wide">
-                    Episode 1: The American Ouverture
+                <p class="text-[#fbbf24] text-lg font-medium tracking-wide" id="episode-subtitle">
+                    <!-- Content set by JS -->
                 </p>
             </div>
 
@@ -100,8 +121,8 @@
             <div class="bg-[#2d3646] p-4 rounded-xl mb-6 shadow-inner border border-gray-600/30">
                 
                 <!-- HIDDEN AUDIO ELEMENT -->
-                <!-- Replace the src below with your actual audio file URL -->
-                <audio id="podcast-audio" src="intro.mp3"></audio>
+                <!-- The src attribute is initially set here, but is dynamically changed by the setLanguage function. -->
+                <audio id="podcast-audio" src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"></audio>
 
                 <!-- Visualizer -->
                 <div class="h-12 flex items-center justify-center gap-1 mb-4 w-full px-2" id="waveform">
@@ -128,29 +149,18 @@
             </div>
 
             <!-- Story Text -->
-            <div class="space-y-4 text-gray-300 font-light leading-relaxed text-sm md:text-base overflow-y-auto pr-2 custom-scrollbar">
-                <p>
-                    It's remarkable how certain moments retain their vividness, even after a decade has passed. Ten years ago, the opportunity arose to finally cross the threshold into a country I had long held in keen curiosity: the United States of America. For someone with an explorer’s heart, this wasn't just a trip; it was the realization of a quietly held aspiration to experience a truly new cultural and physical landscape.
-                </p>
-                <p>
-                    What added a truly profound layer to this journey was the destination itself: the chance to reconnect with my son, then embarking on his own professional life there. I arrived not just as a casual tourist, but as a parent ready to share in a new chapter, eager to see the world through his contemporary lens.
-                </p>
-                <p>
-                    I remember the initial anticipation—a blend of calm composure masking an intense, youthful excitement. The flight itself was the passage into a dream I'd nurtured for years. But what did I discover upon touching down on that vast continent?
-                </p>
-                <p class="italic text-white font-medium border-l-2 border-[#fbbf24] pl-3 py-1">
-                    Would you be interested in hearing about the very first, perhaps unexpected, sensory impression I had upon arriving in the USA?
-                </p>
+            <div class="space-y-4 text-gray-300 font-light leading-relaxed text-sm md:text-base overflow-y-auto pr-2 custom-scrollbar" id="story-text">
+                <!-- Content set by JS -->
             </div>
+            
             <!-- Next Episode Link -->
             <div class="pt-4 mt-4 border-t border-gray-600/50">
                 <a href="episode_2.html" class="text-sm font-medium text-[#fbbf24] hover:text-white transition duration-200 flex items-center gap-2">
-                    Next Episode: The City of Angels <i class="fas fa-arrow-right"></i>
+                    <span id="next-ep-link-text"><!-- Content set by JS --></span> <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
 
             <!-- Bottom decorative fade for text -->
-
             <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#3b4455] to-transparent pointer-events-none md:block hidden"></div>
         </div>
 
@@ -167,14 +177,14 @@
 
                 <!-- Gradient Overlay -->
                 <div class="absolute inset-0 bg-gradient-to-r from-[#3b4455] via-transparent to-transparent opacity-40 z-10 pointer-events-none"></div>
-
-                <!-- Main Image Slideshow -->
+ 
+               <!-- Main Image -->
                 <img 
-                    id="slideshow-image"
-                    src="https://images.unsplash.com/photo-1544435253-f08799672692?q=80&w=1976&auto=format&fit=crop" 
-                    alt="Portrait of the Explorer" 
-                    class="absolute inset-0 w-full h-full object-cover object-top opacity-90 transition-opacity duration-1000 ease-in-out"
+                    src="podcast_studio.jpeg" 
+                    alt="Location View" 
+                    class="absolute inset-0 w-full h-full object-cover opacity-90"
                 >
+                
                 
                 <!-- Label -->
                 <div class="absolute bottom-3 left-3 z-20 bg-black/60 px-2 py-1 rounded text-[10px] font-bold tracking-widest text-white/90 uppercase border-l-2 border-[#fbbf24]">
@@ -187,12 +197,14 @@
                 <!-- Gradient Overlay -->
                 <div class="absolute inset-0 bg-gradient-to-r from-[#3b4455] via-transparent to-transparent opacity-30 z-10 pointer-events-none"></div>
 
-                <!-- Secondary Image -->
+		<!-- Secondary Image Slideshow -->
                 <img 
-                    src="podcast_studio.JPEG" 
-                    alt="Location View" 
-                    class="absolute inset-0 w-full h-full object-cover opacity-90"
+                    id="slideshow-image"
+                    src="https://images.unsplash.com/photo-1544435253-f08799672692?q=80&w=1976&auto=format&fit=crop" 
+                    alt="Portrait of the Explorer" 
+                    class="absolute inset-0 w-full h-full object-cover object-top opacity-90 transition-opacity duration-1000 ease-in-out"
                 >
+
                 
                 <!-- Label -->
                 <div class="absolute bottom-3 left-3 z-20 bg-black/60 px-2 py-1 rounded text-[10px] font-bold tracking-widest text-white/90 uppercase border-l-2 border-blue-400">
@@ -210,6 +222,116 @@
     </div>
 
     <script>
+        // --- Translations Data and Audio Mappings ---
+        const translations = {
+            'en': {
+                pageTitle: "The Explorer's Tales - Podcast Player",
+                mainTitle: "The<br>Explorer's Tales",
+                subtitle: "Episode 1: The American Ouverture",
+                story: [
+                    "It's remarkable how certain moments retain their vividness, even after a decade has passed. Ten years ago, the opportunity arose to finally cross the threshold into a country I had long held in keen curiosity: the United States of America. For someone with an explorer’s heart, this wasn't just a trip; it was the realization of a quietly held aspiration to experience a truly new cultural and physical landscape.",
+                    "What added a truly profound layer to this journey was the destination itself: the chance to reconnect with my son, then embarking on his own professional life there. I arrived not just as a casual tourist, but as a parent ready to share in a new chapter, eager to see the world through his contemporary lens.",
+                    "I remember the initial anticipation—a blend of calm composure masking an intense, youthful excitement. The flight itself was the passage into a dream I'd nurtured for years. But what did I discover upon touching down on that vast continent?",
+                    "Would you be interested in hearing about the very first, perhaps unexpected, sensory impression I had upon arriving in the USA?"
+                ],
+                nextEpLink: "Next Episode: The City of Angels",
+                audioSrc: "intro_en.mp3" // Default English Audio URL
+            },
+            'hi': {
+                pageTitle: "द एक्सप्लोरर टेल्स - पॉडकास्ट प्लेयर",
+                mainTitle: "द<br>एक्सप्लोरर टेल्स",
+                subtitle: "एपिसोड 1: अमेरिकन ओवरचर",
+                story: [
+                    "यह उल्लेखनीय है कि कुछ क्षण एक दशक बीत जाने के बाद भी अपनी जीवंतता कैसे बनाए रखते हैं। दस साल पहले, मुझे उस देश में कदम रखने का अवसर मिला जिसके लिए मेरे मन में हमेशा से गहरी जिज्ञासा थी: संयुक्त राज्य अमेरिका। एक खोजकर्ता के दिल वाले व्यक्ति के लिए, यह सिर्फ एक यात्रा नहीं थी; यह वास्तव में एक नए सांस्कृतिक और भौतिक परिदृश्य का अनुभव करने की एक शांत रखी गई इच्छा की पूर्ति थी।",
+                    "इस यात्रा में एक वास्तव में गहरा आयाम यह था कि गंतव्य स्वयं मेरे बेटे से फिर से जुड़ने का मौका था, जो तब वहाँ अपने पेशेवर जीवन की शुरुआत कर रहा था। मैं सिर्फ एक आकस्मिक पर्यटक के रूप में नहीं, बल्कि एक माता-पिता के रूप में एक नए अध्याय में भागीदार बनने के लिए तैयार था, जो उसकी समकालीन दृष्टि से दुनिया को देखने के लिए उत्सुक था।",
+                    "मुझे प्रारंभिक प्रत्याशा याद है - शांत संयम का मिश्रण जो एक तीव्र, युवा उत्साह को छुपा रहा था। उड़ान अपने आप में एक सपने का मार्ग थी जिसे मैंने बरसों तक संजोया था। लेकिन उस विशाल महाद्वीप पर उतरने पर मुझे क्या पता चला?",
+                    "क्या आप संयुक्त राज्य अमेरिका पहुंचने पर मेरे द्वारा मिली पहली, शायद अप्रत्याशित, संवेदी छाप के बारे में सुनने में रुचि रखेंगे?"
+                ],
+                nextEpLink: "अगला एपिसोड: द सिटी ऑफ़ एंजेल्स",
+                audioSrc: "intro_hi.mp3" // *** REPLACE WITH YOUR HOSTED HINDI AUDIO URL ***
+            },
+            'or': {
+                pageTitle: "ଦି ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ - ପଡକାଷ୍ଟ୍ ପ୍ଲେୟାର୍",
+                mainTitle: "ଦି<br>ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ",
+                subtitle: "ଏପିସୋଡ୍ ୧: ଆମେରିକୀୟ ଓଭର୍‌ଚର୍",
+                story: [
+                    "ଏହା ଉଲ୍ଲେଖନୀୟ ଯେ କିପରି କିଛି ମୁହୂର୍ତ୍ତ ଏକ ଦଶନ୍ଧି ପରେ ମଧ୍ୟ ସେମାନଙ୍କର ଉଜ୍ଜୀବତା ବଜାୟ ରଖନ୍ତି। ଦଶ ବର୍ଷ ପୂର୍ବେ, ମୋର ଗଭୀର କୌତୁହଳ ଥିବା ଏକ ଦେଶରେ ପ୍ରବେଶ କରିବାର ସୁଯୋଗ ମିଳିଲା: ଯୁକ୍ତରାଷ୍ଟ୍ର ଆମେରିକା। ଜଣେ ଅନୁସନ୍ଧାନକାରୀଙ୍କ ହୃଦୟ ଥିବା ବ୍ୟକ୍ତି ପାଇଁ, ଏହା କେବଳ ଏକ ଭ୍ରମଣ ନଥିଲା; ଏହା ଏକ ନୂତନ ସାଂସ୍କୃତିକ ଏବଂ ଭୌତିକ ଦୃଶ୍ୟ ଅନୁଭବ କରିବାର ଏକ ଶାନ୍ତ ଇଚ୍ଛା ପୂରଣ ଥିଲା।",
+                    "ଏହି ଯାତ୍ରା ପାଇଁ ଏକ ପ୍ରକୃତ ଗଭୀର ସ୍ତର ଯୋଡିଥିଲା ​​ଗନ୍ତବ୍ୟସ୍ଥଳ ନିଜେ: ମୋର ପୁଅ ସହିତ ପୁନଃ ସଂଯୋଗ କରିବାର ସୁଯୋଗ, ଯିଏ ସେତେବେଳେ ସେଠାରେ ନିଜର ବୃତ୍ତିଗତ ଜୀବନ ଆରମ୍ଭ କରୁଥିଲେ। ମୁଁ କେବଳ ଜଣେ ସାଧାରଣ ପର୍ଯ୍ୟଟକ ଭାବରେ ନୁହେଁ, ବରଂ ଏକ ନୂତନ ଅଧ୍ୟାୟରେ ଅଂଶୀଦାର ହେବାକୁ ପ୍ରସ୍ତୁତ ଥିବା ଜଣେ ପିତା କିମ୍ବା ମାତା ଭାବରେ ପହଞ୍ଚିଥିଲି, ତାଙ୍କର ସମସାମୟିକ ଦୃଷ୍ଟିକୋଣ ମାଧ୍ୟମରେ ଦୁନିଆକୁ ଦେଖିବାକୁ ଉତ୍ସୁକ ଥିଲି।",
+                    "ମୋର ପ୍ରାରମ୍ଭିକ ଆଶା ମନେ ଅଛି - ଶାନ୍ତ ସ୍ଥିରତାର ଏକ ମିଶ୍ରଣ ଯାହା ଏକ ତୀବ୍ର, ଯୁବକ ଉତ୍ସାହକୁ ଲୁଚାଉଥିଲା। ଉଡ଼ାଣ ନିଜେ ଏକ ସ୍ୱପ୍ନରେ ଯିବାର ମାର୍ଗ ଥିଲା ଯାହାକୁ ମୁଁ ବର୍ଷ ବର୍ଷ ଧରି ପୋଷଣ କରିଥିଲି। କିନ୍ତୁ ସେହି ବିଶାଳ ମହାଦେଶରେ ଓହ୍ଲାଇବା ପରେ ମୁଁ କ’ଣ ଆବିଷ୍କାର କଲି?",
+                    "ଆପଣ ଯୁକ୍ତରାଷ୍ଟ୍ର ଆମେରିକାରେ ପହଞ୍ଚିବା ପରେ ମୋର ପ୍ରଥମ, ବୋଧହୁଏ ଅପ୍ରତ୍ୟାଶିତ, ସମ୍ବେଦନଶୀଳ ଛାପ ବିଷୟରେ ଶୁଣିବାକୁ ଆଗ୍ରହୀ ହେବେ କି?"
+                ],
+                nextEpLink: "ପରବର୍ତ୍ତୀ ଏପିସୋଡ୍: ଦ ସିଟି ଅଫ୍ ଏଞ୍ଜେଲ୍ସ",
+                audioSrc: "intro_or.mp3" // *** REPLACE WITH YOUR HOSTED ODIA AUDIO URL ***
+            }
+        };
+
+        const elements = {
+            pageTitle: document.getElementById('page-title'),
+            mainTitle: document.getElementById('main-title'),
+            subtitle: document.getElementById('episode-subtitle'),
+            storyText: document.getElementById('story-text'),
+            nextEpLinkText: document.getElementById('next-ep-link-text'),
+            langButtons: document.querySelectorAll('.lang-button')
+        };
+        
+        // Define audio element globally for easy access
+        const audio = document.getElementById('podcast-audio');
+        const icon = document.getElementById('play-btn').querySelector('i');
+        const bars = document.querySelectorAll('.waveform-bar');
+        const progressFill = document.getElementById('progress-fill');
+        const progressContainer = document.getElementById('progress-container');
+        const timeDisplay = document.getElementById('current-time');
+
+
+        // --- Language Switching Functionality ---
+        function setLanguage(lang) {
+            const t = translations[lang];
+
+            // 1. --- Handle Audio Switch ---
+            if (!audio.paused) {
+                audio.pause();
+            }
+            // Update audio source
+            audio.src = t.audioSrc;
+            audio.load();
+            
+            // Reset player visuals
+            icon.classList.remove('fa-pause');
+            icon.classList.add('fa-play', 'ml-1');
+            bars.forEach(bar => bar.classList.remove('active'));
+            progressFill.style.width = '0%';
+            timeDisplay.textContent = '00:00';
+            // ---------------------------------
+
+            // 2. --- Handle Text Switch ---
+            elements.pageTitle.textContent = t.pageTitle;
+            elements.mainTitle.innerHTML = t.mainTitle;
+            elements.subtitle.textContent = t.subtitle;
+            elements.nextEpLinkText.textContent = t.nextEpLink;
+
+            // Update story paragraphs
+            elements.storyText.innerHTML = t.story.map((p, index) => {
+                const tagClass = index === t.story.length - 1 
+                    ? 'italic text-white font-medium border-l-2 border-[#fbbf24] pl-3 py-1' 
+                    : '';
+                return `<p class="${tagClass}">${p}</p>`;
+            }).join('');
+
+            // Update button styling
+            elements.langButtons.forEach(button => {
+                button.classList.remove('selected');
+                if (button.id === `lang-${lang}`) {
+                    button.classList.add('selected');
+                }
+            });
+            
+            // Set HTML language attribute
+            document.documentElement.lang = lang === 'hi' ? 'hi-IN' : lang === 'or' ? 'or-IN' : 'en';
+            
+            // Store preference in localStorage to persist across pages/loads
+            localStorage.setItem('podcastLang', lang);
+        }
+
         // --- Waveform Generation ---
         const waveformContainer = document.getElementById('waveform');
         const barCount = 40;
@@ -217,58 +339,43 @@
         for (let i = 0; i < barCount; i++) {
             const bar = document.createElement('div');
             bar.className = `waveform-bar bar-${(i % 8) + 1}`;
-            // Randomize initial height for static look
             bar.style.height = Math.max(15, Math.random() * 80) + '%'; 
             waveformContainer.appendChild(bar);
         }
 
         // --- Player Logic ---
-        const audio = document.getElementById('podcast-audio');
-        const playBtn = document.getElementById('play-btn');
-        const icon = playBtn.querySelector('i');
-        const bars = document.querySelectorAll('.waveform-bar');
-        const progressFill = document.getElementById('progress-fill');
-        const progressContainer = document.getElementById('progress-container');
-        const timeDisplay = document.getElementById('current-time');
-        
         function formatTime(seconds) {
             const mins = Math.floor(seconds / 60);
             const secs = Math.floor(seconds % 60);
             return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
         }
 
-        // Play/Pause Toggle
         function togglePlay() {
             if (audio.paused) {
                 audio.play();
-                // Icon updates happen in event listeners below
             } else {
                 audio.pause();
             }
         }
 
-        // Update UI when audio starts playing
         audio.addEventListener('play', () => {
             icon.classList.remove('fa-play', 'ml-1');
             icon.classList.add('fa-pause');
             bars.forEach(bar => bar.classList.add('active'));
         });
 
-        // Update UI when audio pauses
         audio.addEventListener('pause', () => {
             icon.classList.remove('fa-pause');
             icon.classList.add('fa-play', 'ml-1');
             bars.forEach(bar => bar.classList.remove('active'));
         });
 
-        // Update Progress Bar & Timer
         audio.addEventListener('timeupdate', () => {
             const percent = (audio.currentTime / audio.duration) * 100;
             progressFill.style.width = `${percent}%`;
             timeDisplay.textContent = formatTime(audio.currentTime);
         });
 
-        // Reset when audio ends
         audio.addEventListener('ended', () => {
             icon.classList.remove('fa-pause');
             icon.classList.add('fa-play', 'ml-1');
@@ -277,7 +384,6 @@
             timeDisplay.textContent = '00:00';
         });
 
-        // Click on Progress Bar to Seek
         progressContainer.addEventListener('click', (e) => {
             const width = progressContainer.clientWidth;
             const clickX = e.offsetX;
@@ -285,45 +391,45 @@
             audio.currentTime = (clickX / width) * duration;
         });
 
-        // Skip buttons
         window.skip = function(seconds) {
             audio.currentTime += seconds;
         }
 
-        playBtn.addEventListener('click', togglePlay);
+        document.getElementById('play-btn').addEventListener('click', togglePlay);
 
         // --- Slideshow Logic ---
         const slideshowImage = document.getElementById('slideshow-image');
         const imageSources = [
-
-            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1976&auto=format&fit=crop", // Landscape
-            "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1976&auto=format&fit=crop"  // Another travel image
+            "https://images.unsplash.com/photo-1544435253-f08799672692?q=80&w=1976&auto=format&fit=crop", 
+            "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=1976&auto=format&fit=crop", 
+            "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1976&auto=format&fit=crop"  
         ];
         let currentImageIndex = 0;
-        const slideshowIntervalTime = 5000; // Change image every 5 seconds
+        const slideshowIntervalTime = 5000; 
 
         function changeImage() {
-            // Trigger fade out by removing the base opacity class and adding a class for 0 opacity
             slideshowImage.classList.remove('opacity-90');
             slideshowImage.classList.add('opacity-0');
 
             setTimeout(() => {
-                // Change the source after fade out is complete
                 currentImageIndex = (currentImageIndex + 1) % imageSources.length;
                 slideshowImage.src = imageSources[currentImageIndex];
 
-                // Trigger fade in by removing the 0 opacity class and adding back the base opacity
                 slideshowImage.classList.remove('opacity-0');
                 slideshowImage.classList.add('opacity-90');
-            }, 1000); // Wait for fade out to complete (matches CSS duration of 1000ms)
+            }, 1000); 
         }
 
-        // Start the slideshow after initial delay
         setTimeout(() => {
              setInterval(changeImage, slideshowIntervalTime);
         }, slideshowIntervalTime);
+
+        // --- Initialization on Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for saved language preference or default to English
+            const savedLang = localStorage.getItem('podcastLang') || 'en';
+            setLanguage(savedLang);
+        });
     </script>
 </body>
-
 </html>
-

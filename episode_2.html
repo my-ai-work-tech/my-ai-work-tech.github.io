@@ -3,12 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Explorer's Tales - Episode 2</title>
+    <title id="page-title">The Explorer's Tales - Episode 2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
+        
         body {
-            font-family: sans-serif;
+            font-family: 'Noto Sans Devanagari', sans-serif; /* Default font support for Hindi */
             background-color: #1a1a1a;
             color: white;
             min-height: 100vh;
@@ -16,29 +18,109 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            position: relative; /* Needed for absolute positioning of language selector */
+        }
+        
+        .language-selector {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 10;
+        }
+
+        .lang-button.selected {
+            background-color: #fbbf24;
+            color: #1a1a1a;
+            font-weight: 700;
         }
     </style>
 </head>
 <body class="p-8">
 
+    <!-- Language Selector -->
+    <div class="language-selector flex space-x-2 bg-gray-700 p-2 rounded-lg shadow-lg">
+        <button id="lang-en" onclick="setLanguage('en')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">English</button>
+        <button id="lang-hi" onclick="setLanguage('hi')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">हिन्दी</button>
+        <button id="lang-or" onclick="setLanguage('or')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">ଓଡ଼ିଆ</button>
+    </div>
+
     <div class="max-w-xl text-center bg-gray-800 p-10 rounded-xl shadow-2xl space-y-6">
         <div class="text-[#fbbf24] text-5xl mb-4">
             <i class="fas fa-city"></i>
         </div>
-        <h1 class="text-3xl font-bold">
-            Episode 2: The City of Angels
+        <h1 class="text-3xl font-bold" id="ep-title">
+            <!-- Content will be set by JavaScript -->
         </h1>
-        <p class="text-gray-300">
-            This is the placeholder page for the next episode. 
-            Here you would typically find the new episode's audio, description, and visual assets.
+        <p class="text-gray-300" id="ep-placeholder-1">
+            <!-- Content will be set by JavaScript -->
         </p>
-        <p class="text-sm text-gray-400 italic">
-            To view the previous episode, click the link below.
+        <p class="text-sm text-gray-400 italic" id="ep-placeholder-2">
+            <!-- Content will be set by JavaScript -->
         </p>
-        <a href="part1.html" class="inline-flex items-center gap-2 bg-[#fbbf24] text-gray-900 font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition duration-200">
-            <i class="fas fa-arrow-left"></i> Back to Episode 1
+        <a href="index.html" class="inline-flex items-center gap-2 bg-[#fbbf24] text-gray-900 font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition duration-200">
+            <i class="fas fa-arrow-left"></i> <span id="ep-link-text"><!-- Content will be set by JavaScript --></span>
         </a>
     </div>
+
+    <script>
+        const translations = {
+            'en': {
+                pageTitle: "The Explorer's Tales - Episode 2",
+                title: "Episode 2: The City of Angels",
+                placeholder1: "This is the placeholder page for the next episode. Here you would typically find the new episode's audio, description, and visual assets.",
+                placeholder2: "To view the previous episode, click the link below.",
+                linkText: "Back to Episode 1"
+            },
+            'hi': {
+                pageTitle: "द एक्सप्लोरर टेल्स - एपिसोड 2",
+                title: "एपिसोड 2: द सिटी ऑफ़ एंजेल्स",
+                placeholder1: "यह अगले एपिसोड के लिए एक प्लेसहोल्डर पेज है। यहाँ आपको आमतौर पर नए एपिसोड का ऑडियो, विवरण और दृश्य संपत्ति मिलेगी।",
+                placeholder2: "पिछले एपिसोड को देखने के लिए, नीचे दिए गए लिंक पर क्लिक करें।",
+                linkText: "एपिसोड 1 पर वापस जाएँ"
+            },
+            'or': {
+                pageTitle: "ଦି ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ - ଏପିସୋଡ୍ ୨",
+                title: "ଏପିସୋଡ୍ ୨: ଦ ସିଟି ଅଫ୍ ଏଞ୍ଜେଲ୍ସ",
+                placeholder1: "ଏହା ପରବର୍ତ୍ତୀ ଏପିସୋଡ୍ ପାଇଁ ଏକ ପ୍ଲେସହୋଲ୍ଡର ପୃଷ୍ଠା। ଏଠାରେ ଆପଣ ସାଧାରଣତଃ ନୂତନ ଏପିସୋଡର ଅଡିଓ, ବର୍ଣ୍ଣନା ଏବଂ ଭିଜୁଆଲ୍ ସମ୍ପତ୍ତି ପାଇବେ।",
+                placeholder2: "ପୂର୍ବ ଏପିସୋଡ୍ ଦେଖିବାକୁ, ନିମ୍ନରେ ଥିବା ଲିଙ୍କରେ କ୍ଲିକ୍ କରନ୍ତୁ।",
+                linkText: "ଏପିସୋଡ୍ 1 କୁ ଫେରିଯାଆନ୍ତୁ"
+            }
+        };
+
+        const elements = {
+            pageTitle: document.getElementById('page-title'),
+            title: document.getElementById('ep-title'),
+            placeholder1: document.getElementById('ep-placeholder-1'),
+            placeholder2: document.getElementById('ep-placeholder-2'),
+            linkText: document.getElementById('ep-link-text'),
+            langButtons: document.querySelectorAll('.lang-button')
+        };
+
+        function setLanguage(lang) {
+            const t = translations[lang];
+
+            // Update text content
+            elements.pageTitle.textContent = t.pageTitle;
+            elements.title.textContent = t.title;
+            elements.placeholder1.textContent = t.placeholder1;
+            elements.placeholder2.textContent = t.placeholder2;
+            elements.linkText.textContent = t.linkText;
+
+            // Update button styling
+            elements.langButtons.forEach(button => {
+                button.classList.remove('selected');
+                if (button.id === `lang-${lang}`) {
+                    button.classList.add('selected');
+                }
+            });
+            
+            // Set HTML language attribute for better screen reader/browser support (optional but good practice)
+            document.documentElement.lang = lang === 'hi' ? 'hi-IN' : lang === 'or' ? 'or-IN' : 'en';
+        }
+
+        // Initialize language to Hindi on load
+        setLanguage('en');
+    </script>
 
 </body>
 </html>
