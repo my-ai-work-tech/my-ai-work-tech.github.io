@@ -10,7 +10,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700&display=swap');
         
         body {
-            font-family: 'Noto Sans Devanagari', sans-serif; /* Default font support for Hindi */
+            font-family: 'Noto Sans Devanagari', sans-serif;
             background-color: #1a1a1a;
             color: white;
             min-height: 100vh;
@@ -18,9 +18,9 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            position: relative; /* Needed for absolute positioning of language selector */
+            position: relative;
         }
-        
+
         .language-selector {
             position: absolute;
             top: 1rem;
@@ -39,8 +39,8 @@
 
     <!-- Language Selector -->
     <div class="language-selector flex space-x-2 bg-gray-700 p-2 rounded-lg shadow-lg">
-        <button id="lang-en" onclick="setLanguage('en')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">English</button>
         <button id="lang-hi" onclick="setLanguage('hi')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">हिन्दी</button>
+        <button id="lang-en" onclick="setLanguage('en')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">English</button>
         <button id="lang-or" onclick="setLanguage('or')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">ଓଡ଼ିଆ</button>
     </div>
 
@@ -116,10 +116,17 @@
             
             // Set HTML language attribute for better screen reader/browser support (optional but good practice)
             document.documentElement.lang = lang === 'hi' ? 'hi-IN' : lang === 'or' ? 'or-IN' : 'en';
+            
+            // Store preference in localStorage (to ensure user can switch back to a specific language)
+            localStorage.setItem('podcastLang', lang);
         }
 
-        // Initialize language to Hindi on load
-        setLanguage('en');
+        // --- Initialization on Load ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check for saved language preference or default to English
+            const savedLang = localStorage.getItem('podcastLang') || 'en';
+            setLanguage(savedLang);
+        });
     </script>
 
 </body>
