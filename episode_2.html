@@ -57,7 +57,7 @@
         <p class="text-sm text-gray-400 italic" id="ep-placeholder-2">
             <!-- Content will be set by JavaScript -->
         </p>
-        <a href="index.html" class="inline-flex items-center gap-2 bg-[#fbbf24] text-gray-900 font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition duration-200">
+        <a href="podcast_player.html" class="inline-flex items-center gap-2 bg-[#fbbf24] text-gray-900 font-bold py-2 px-4 rounded-lg hover:bg-yellow-500 transition duration-200">
             <i class="fas fa-arrow-left"></i> <span id="ep-link-text"><!-- Content will be set by JavaScript --></span>
         </a>
     </div>
@@ -117,7 +117,7 @@
             // Set HTML language attribute for better screen reader/browser support (optional but good practice)
             document.documentElement.lang = lang === 'hi' ? 'hi-IN' : lang === 'or' ? 'or-IN' : 'en';
             
-            // Store preference in localStorage (to ensure user can switch back to a specific language)
+            // Store preference in localStorage (This is the key to persistence)
             localStorage.setItem('podcastLang', lang);
         }
 
