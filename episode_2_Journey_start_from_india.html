@@ -153,15 +153,36 @@
             </div>
             
             <!-- Navigation Links -->
-            <div class="pt-4 mt-4 border-t border-gray-600/50 flex justify-between">
-                <a href="index.html" class="text-sm font-medium text-gray-400 hover:text-white transition duration-200 flex items-center gap-2">
-                    <i class="fas fa-arrow-left"></i> <span id="prev-ep-link-text">Previous Episode</span>
-                </a>
-                <!-- Future link for Ep 3 -->
-                <a href="#" class="text-sm font-medium text-[#fbbf24] hover:text-white transition duration-200 flex items-center gap-2">
-                    <span id="next-ep-link-text">Next Episode</span> <i class="fas fa-arrow-right"></i>
-                </a>
+            <div class="pt-4 mt-4 border-t border-gray-600/50 flex flex-col gap-4">
+                <div class="flex justify-between">
+                    <a href="index.html" class="text-sm font-medium text-gray-400 hover:text-white transition duration-200 flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> <span id="prev-ep-link-text">Previous Episode</span>
+                    </a>
+                    <!-- Future link for Ep 3 -->
+                    <a href="episode_3_first_impressions.html" class="text-sm font-medium text-[#fbbf24] hover:text-white transition duration-200 flex items-center gap-2">
+                        <span id="next-ep-link-text">Next Episode</span> <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+
+                <!-- Social Media Handles -->
+                <div class="flex flex-col items-center gap-2 mt-2 pt-4 border-t border-gray-600/30">
+                    <span id="follow-us-text" class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Follow Us</span>
+
+                    <div class="flex gap-6">
+                        <a href="https://www.facebook.com/share/1PrNyjm3TK/" class="text-gray-400 hover:text-[#1877F2] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1">
+                            <i class="fab fa-facebook fa-lg"></i>
+                        </a>
+                        <a href="https://www.instagram.com/drbasantabehera?utm_source=qr&igsh=MW9zbjI5bGZkeGNudw==" class="text-gray-400 hover:text-[#E4405F] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1">
+                            <i class="fab fa-instagram fa-lg"></i>
+                        </a>
+                        <a href="https://youtube.com/@drbasantabehera1276?si=W5xkCeNhOqF0m5rn" class="text-gray-400 hover:text-[#FF0000] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1">
+                            <i class="fab fa-youtube fa-lg"></i>
+                        </a>
+                    </div>
+
+                </div>
             </div>
+
 
             <!-- Bottom decorative fade for text -->
             <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#3b4455] to-transparent pointer-events-none md:block hidden"></div>
@@ -183,7 +204,7 @@
  
                <!-- Main Image -->
                 <img 
-                    src="https://images.unsplash.com/photo-1542296332-2e44a996aa0b?q=80&w=1974&auto=format&fit=crop" 
+                    src="podcast_studio.jpeg" 
                     alt="Passport and Travel Documents" 
                     class="absolute inset-0 w-full h-full object-cover opacity-90"
                 >
@@ -202,7 +223,7 @@
 		<!-- Secondary Image Slideshow -->
                 <img 
                     id="slideshow-image"
-                    src="https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?q=80&w=2070&auto=format&fit=crop" 
+                    src="./episode_2_Journey_start_from_india/pic/passport.jpg", // passport" 
                     alt="Airport Terminal" 
                     class="absolute inset-0 w-full h-full object-cover object-center opacity-90 transition-opacity duration-1000 ease-in-out"
                 >
@@ -215,7 +236,7 @@
 
                 <!-- Decorative Sparkle -->
                 <div class="absolute bottom-4 right-4 text-white/20 text-4xl z-20">
-                    <i class="fas fa-plane-departure fa-pulse" style="animation-duration: 3s;"></i>
+                    <i class="fas fa-plane-departure fa-pulse" style="animation-duration: 5s;"></i>
                 </div>
             </div>
 
@@ -231,7 +252,7 @@
                 mainTitle: "The<br>Explorer's Tales",
                 subtitle: "Episode 2: The Journey Starts from India",
                 prevLink: "Previous: Episode 1",
-                nextLink: "Next: The City of Angels",
+                nextLink: "Next: First Impressions",
                 story: [
                     "Welcome back to 'The Explorer's Tales.' Last time, we spoke of a ten-year-old dream to visit the United States. Today, we step back a little, because every great journey begins long before the plane takes off—it begins with preparation.",
                     "Securing the US visa from the Consulate in Kolkata was the first concrete step, making the trip feel real. Then came the domestic preparation, a flurry of activity guided by the unique challenge of crossing continents and climates.",
@@ -244,7 +265,7 @@
                     "The journey was relentless, crossing multiple time zones. And finally, after what felt like an eternity of air travel and layovers, we touched down in Chicago. It was 2:00 AM Central Standard Time. We had arrived. The dream was complete, but the American Overture was just about to begin.",
                     "In our next episode, we’ll move beyond the airport. We’ll cover the first impressions of Chicago, the long-awaited reunion with my son, and finally settle in before the real exploration starts."
                 ],
-                audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" 
+                audioSrc: "./episode_2_Journey_start_from_india/start_journey_en.mp3" 
             },
             'hi': {
                 pageTitle: "द एक्सप्लोरर टेल्स - एपिसोड 2",
@@ -264,7 +285,7 @@
                     "यात्रा अथक थी, कई समय क्षेत्रों को पार करते हुए। और अंत में, हवाई यात्रा और पड़ावों के बाद, हम शिकागो में उतरे। रात के 2:00 बजे थे। हम पहुंच चुके थे। सपना पूरा हो गया था, लेकिन 'अमेरिकन ओवरचर' बस शुरू होने वाला था।",
                     "हमारे अगले एपिसोड में, हम हवाई अड्डे से आगे बढ़ेंगे। हम शिकागो की पहली झलक, मेरे बेटे के साथ लंबे समय से प्रतीक्षित पुनर्मिलन, और वास्तविक अन्वेषण शुरू होने से पहले बसने की प्रक्रिया को कवर करेंगे।"
                 ],
-                audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+                audioSrc: "./episode_2_Journey_start_from_india/start_journey_hi.mp3"
             },
             'or': {
                 pageTitle: "ଦି ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ - ଏପିସୋଡ୍ ୨",
@@ -284,7 +305,7 @@
                     "ଅନେକ ସମୟ କ୍ଷେତ୍ର ପାର୍ କରି ଶେଷରେ ଆମେ ଶିକାଗୋରେ ପହଞ୍ଚିଲୁ। ସେତେବେଳେ ରାତି ୨ଟା ହୋଇଥିଲା। ଆମେ ପହଞ୍ଚି ସାରିଥିଲୁ। ସ୍ୱପ୍ନ ପୂରଣ ହୋଇଥିଲା, କିନ୍ତୁ ଆମେରିକୀୟ ଯାତ୍ରା କେବଳ ଆରମ୍ଭ ହେବାକୁ ଯାଉଥିଲା।",
                     "ଆମର ପରବର୍ତ୍ତୀ ଏପିସୋଡ୍ ରେ, ଆମେ ଶିକାଗୋର ପ୍ରଥମ ଅନୁଭୂତି ଏବଂ ମୋ ପୁଅ ସହିତ ପୁନର୍ମିଳନ ବିଷୟରେ କଥା ହେବା।"
                 ],
-                audioSrc: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3"
+                audioSrc: "./episode_2_Journey_start_from_india/start_journey_or.mp3"
             }
         };
 
@@ -423,12 +444,17 @@
         const slideshowImage = document.getElementById('slideshow-image');
         // Images: Airport/Planes, Night City/Arrival, Packing/Luggage vibe
         const imageSources = [
-            "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf?q=80&w=2070&auto=format&fit=crop", // Terminal
-            "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?q=80&w=2074&auto=format&fit=crop", // Wing view
-            "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=2144&auto=format&fit=crop"  // Chicago Night
+            "./episode_2_Journey_start_from_india/pic/passport.jpg", // passport
+            "./episode_2_Journey_start_from_india/pic/bro_drop.jpg", // Bro dropping at airport
+            "./episode_2_Journey_start_from_india/pic/airport_drop.jpg", // Bro dropping at airport
+            "./episode_2_Journey_start_from_india/pic/airport_drop2.jpg", // Bro dropping at airport
+            "./episode_2_Journey_start_from_india/pic/airport_hotel.jpg", // hotel accomodation
+            "./episode_2_Journey_start_from_india/pic/Start_journey.jpg", // Bro dropping at airport
+            "./episode_2_Journey_start_from_india/pic/outside_from_plane_window.png",
+
         ];
         let currentImageIndex = 0;
-        const slideshowIntervalTime = 5000; 
+        const slideshowIntervalTime = 10000; 
 
         function changeImage() {
             slideshowImage.classList.remove('opacity-90');
