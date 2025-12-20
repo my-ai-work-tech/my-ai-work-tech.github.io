@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">The Explorer's Tales - Episode 5</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Roboto:wght@300;400;500&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans+Oriya&display=swap');
+
+        :root { --slate-800: #374151; --slate-900: #1f2937; --gold-accent: #fbbf24; }
+        body { font-family: 'Roboto', 'Noto Sans Devanagari', 'Noto Sans Oriya', sans-serif; background-color: #1a1a1a; color: white; overflow-x: hidden; }
+        .font-heading { font-family: 'Oswald', sans-serif; }
+        .language-selector { position: absolute; top: 1rem; right: 1rem; z-index: 50; }
+        .lang-button.selected { background-color: #fbbf24; color: #1a1a1a; font-weight: 700; }
+        .waveform-bar { width: 4px; background-color: rgba(255, 255, 255, 0.6); border-radius: 9999px; animation: wave 1s ease-in-out infinite; animation-play-state: paused; }
+        .waveform-bar.active { background-color: white; animation-play-state: running; }
+        @keyframes wave { 0%, 100% { height: 10%; } 50% { height: 100%; } }
+        .bar-1 { animation-duration: 0.8s; } .bar-2 { animation-duration: 1.1s; } .bar-3 { animation-duration: 1.3s; }
+        .bar-4 { animation-duration: 0.9s; } .bar-5 { animation-duration: 1.2s; } .bar-6 { animation-duration: 0.7s; }
+        .bar-7 { animation-duration: 1.4s; } .bar-8 { animation-duration: 1.0s; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #2d3748; } ::-webkit-scrollbar-thumb { background: #718096; border-radius: 3px; }
+        .live-pulse { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+    </style>
+</head>
+<body class="h-screen w-full flex items-center justify-center bg-gray-900 p-0 md:p-8">
+
+    <div class="language-selector md:block hidden flex space-x-2 bg-gray-700 p-2 rounded-lg shadow-lg">
+        <button id="lang-en" onclick="setLanguage('en')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">English</button>
+        <button id="lang-hi" onclick="setLanguage('hi')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">हिन्दी</button>
+        <button id="lang-or" onclick="setLanguage('or')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">ଓଡ଼ିଆ</button>
+    </div>
+
+    <div class="bg-slate-700 w-full max-w-6xl h-full md:h-[90vh] rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
+        <div class="w-full md:w-1/2 bg-[#3b4455] p-6 md:p-10 flex flex-col justify-between h-full relative z-10 overflow-y-auto">
+            <div class="mb-6">
+                <h1 class="font-heading text-4xl md:text-5xl font-bold tracking-tight text-white mb-2 uppercase leading-none" id="main-title">The<br>Explorer's Tales</h1>
+                <p class="text-[#fbbf24] text-lg font-medium tracking-wide" id="episode-subtitle">Episode 5: Trip to Niagara Falls</p>
+            </div>
+
+            <div class="bg-[#2d3646] p-4 rounded-xl mb-6 shadow-inner border border-gray-600/30">
+                <audio id="podcast-audio" src=""></audio>
+                <div class="h-12 flex items-center justify-center gap-1 mb-4 w-full px-2" id="waveform"></div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-gray-400 font-mono" id="current-time">00:00</span>
+                    <div class="flex items-center gap-6">
+                        <button class="text-gray-400 hover:text-white transition" onclick="skip(-10)"><i class="fas fa-step-backward"></i></button>
+                        <button id="play-btn" class="w-12 h-12 flex items-center justify-center rounded-full border-2 border-white text-white hover:bg-white hover:text-gray-900 transition duration-300"><i class="fas fa-play ml-1"></i></button>
+                        <button class="text-gray-400 hover:text-white transition" onclick="skip(10)"><i class="fas fa-step-forward"></i></button>
+                    </div>
+                    <button class="text-gray-400 hover:text-white transition"><i class="far fa-comment-alt"></i></button>
+                </div>
+                <div class="w-full bg-gray-600 h-1 rounded-full overflow-hidden cursor-pointer group" id="progress-container">
+                    <div id="progress-fill" class="bg-white h-full w-[0%] group-hover:bg-[#fbbf24] transition-all duration-100 ease-linear"></div>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-gray-300 font-light leading-relaxed text-sm md:text-base overflow-y-auto pr-2 custom-scrollbar" id="story-text"></div>
+            
+            <div class="pt-4 mt-4 border-t border-gray-600/50 flex flex-col gap-4">
+                <div class="flex justify-between">
+                    <a href="episode_4_here_and_there_in_usa.html" class="text-sm font-medium text-gray-400 hover:text-white transition duration-200 flex items-center gap-2"><i class="fas fa-arrow-left"></i> <span id="prev-ep-link-text">Previous Episode</span></a>
+                    <a href="episode_6_trip_to_dc.html" class="text-sm font-medium text-[#fbbf24] hover:text-white transition duration-200 flex items-center gap-2"><span id="next-ep-link-text">Next Episode</span> <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="flex flex-col items-center gap-2 mt-2 pt-4 border-t border-gray-600/30">
+                    <span id="follow-us-text" class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Follow Us</span>
+                    <div class="flex gap-6">
+                        <a href="https://www.facebook.com/share/1PrNyjm3TK/" class="text-gray-400 hover:text-[#1877F2] hover:scale-110 transition"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="https://www.instagram.com/drbasantabehera?utm_source=qr&igsh=MW9zbjI5bGZkeGNudw==" class="text-gray-400 hover:text-[#E4405F] hover:scale-110 transition"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="https://youtube.com/@drbasantabehera1276?si=W5xkCeNhOqF0m5rn" class="text-gray-400 hover:text-[#FF0000] hover:scale-110 transition"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#3b4455] to-transparent pointer-events-none md:block hidden"></div>
+        </div>
+
+        <div class="w-full md:w-1/2 relative h-96 md:h-full bg-black flex flex-col border-l border-gray-800">
+            <div class="relative w-full h-1/2 overflow-hidden group">
+                <div class="absolute top-4 right-4 z-20 flex items-center gap-2 bg-red-600/90 text-white px-3 py-1 rounded text-xs font-bold tracking-wider shadow-lg backdrop-blur-sm">
+                    <div class="w-2 h-2 bg-white rounded-full live-pulse"></div> ON AIR
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-[#3b4455] via-transparent to-transparent opacity-40 z-10 pointer-events-none"></div>
+                <img src="https://images.unsplash.com/photo-1579624538806-25e24a568297?q=80&w=2070&auto=format&fit=crop" alt="Niagara Falls" class="absolute inset-0 w-full h-full object-cover opacity-90">
+                <div class="absolute bottom-3 left-3 z-20 bg-black/60 px-2 py-1 rounded text-[10px] font-bold tracking-widest text-white/90 uppercase border-l-2 border-[#fbbf24]">Nature's Fury</div>
+            </div>
+            <div class="relative w-full h-1/2 overflow-hidden border-t-2 border-gray-800">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#3b4455] via-transparent to-transparent opacity-30 z-10 pointer-events-none"></div>
+                <img id="slideshow-image" src="https://images.unsplash.com/photo-1544464168-d057a75908b9?q=80&w=2070&auto=format&fit=crop" alt="Maid of the Mist" class="absolute inset-0 w-full h-full object-cover object-center opacity-90 transition-opacity duration-1000 ease-in-out">
+                <div class="absolute bottom-3 left-3 z-20 bg-black/60 px-2 py-1 rounded text-[10px] font-bold tracking-widest text-white/90 uppercase border-l-2 border-blue-400">Maid of the Mist</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            'en': {
+                pageTitle: "The Explorer's Tales - Episode 5",
+                mainTitle: "The<br>Explorer's Tales",
+                subtitle: "Episode 5: Trip to Niagara Falls",
+                prevLink: "Previous: Here and There",
+                nextLink: "Next: Trip to DC",
+                story: [
+                    "The highlight of our trip so far was undoubtedly the journey to Niagara Falls. It wasn't just a destination; it was a phenomenon. We embarked on a road trip, watching the landscape change as we approached the border of the US and Canada.",
+                    "Hearing the roar of the water before even seeing it was spine-chilling. The sheer volume of water crashing down every second is something photos simply cannot capture. It is nature at its most powerful and most beautiful.",
+                    "We donned the famous blue rain ponchos and boarded the 'Maid of the Mist' boat. As the boat moved closer to the Horseshoe Falls, the mist became a heavy rain. We were drenched, cold, but laughing with pure joy. The sound was deafening, a thundering applause of nature.",
+                    "At night, the falls transformed. Colored lights illuminated the cascading water, turning the ferocious white foam into rainbows of red, blue, and purple. It was magical, a sight etched into my memory forever.",
+                    "Standing there, watching the water flow endlessly, I felt small but connected to the earth. It was a spiritual experience, a reminder of the timeless beauty of our world.",
+                    "The trip back was quiet, filled with the sleepy satisfaction of having witnessed a wonder. Niagara wasn't just a waterfall; it was a testament to the grandeur of nature."
+                ],
+                audioSrc: "./episode_5_niagara/audio_en.mp3" 
+            },
+            'hi': {
+                pageTitle: "द एक्सप्लोरर टेल्स - एपिसोड 5",
+                mainTitle: "द<br>एक्सप्लोरर टेल्स",
+                subtitle: "एपिसोड 5: नियाग्रा फॉल्स की यात्रा",
+                prevLink: "पिछला: यहाँ और वहाँ",
+                nextLink: "अगला: डीसी की यात्रा",
+                story: [
+                    "हमारी अब तक की यात्रा का मुख्य आकर्षण निस्संदेह नियाग्रा फॉल्स की यात्रा थी। यह केवल एक गंतव्य नहीं था; यह एक घटना थी। हम एक सड़क यात्रा पर निकले, और अमेरिका और कनाडा की सीमा के पास पहुँचते ही परिदृश्य को बदलते देखा।",
+                    "पानी को देखने से पहले ही उसकी दहाड़ सुनना रोंगटे खड़े कर देने वाला था। हर सेकंड नीचे गिरने वाले पानी की मात्रा ऐसी है जिसे तस्वीरें कैद नहीं कर सकतीं। यह प्रकृति का सबसे शक्तिशाली और सबसे सुंदर रूप है।",
+                    "हमने मशहूर नीले रेन पोंचो (बरसाती) पहने और 'मेड ऑफ द मिस्ट' नाव पर सवार हुए। जैसे ही नाव हॉर्सशू फॉल्स के करीब बढ़ी, धुंध भारी बारिश बन गई। हम भीग गए थे, ठंड लग रही थी, लेकिन हम शुद्ध खुशी के साथ हंस रहे थे। आवाज़ बहरी कर देने वाली थी, प्रकृति की गड़गड़ाहट जैसी।",
+                    "रात में, झरने बदल गए। रंगीन रोशनी ने गिरते पानी को रोशन किया, भयंकर सफेद झाग को लाल, नीले और बैंगनी रंग के इंद्रधनुष में बदल दिया। यह जादुई था, एक ऐसा दृश्य जो मेरी यादों में हमेशा के लिए बस गया।",
+                    "वहाँ खड़े होकर, पानी को लगातार बहते हुए देखकर, मैंने खुद को छोटा महसूस किया लेकिन धरती से जुड़ा हुआ। यह एक आध्यात्मिक अनुभव था।",
+                    "वापसी की यात्रा शांत थी, एक अजूबे को देखने की संतुष्टि से भरी हुई। नियाग्रा सिर्फ एक झरना नहीं था; यह प्रकृति की भव्यता का प्रमाण था।"
+                ],
+                audioSrc: "./episode_5_niagara/audio_hi.mp3"
+            },
+            'or': {
+                pageTitle: "ଦି ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ - ଏପିସୋଡ୍ ୫",
+                mainTitle: "ଦି<br>ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ",
+                subtitle: "ଏପିସୋଡ୍ ୫: ନିଆଗ୍ରା ଫଲ୍ସ ଯାତ୍ରା",
+                prevLink: "ପୂର୍ବ: ଏଠି ଓ ସେଠି",
+                nextLink: "ପରବର୍ତ୍ତୀ: ଡିସି ଯାତ୍ରା",
+                story: [
+                    "ଆମ ଯାତ୍ରାର ସବୁଠାରୁ ମୁଖ୍ୟ ଆକର୍ଷଣ ଥିଲା ନିଆଗ୍ରା ଫଲ୍ସ। ଆମେ ଏକ ସଡ଼କ ଯାତ୍ରା ଆରମ୍ଭ କଲୁ।",
+                    "ପାଣି ଦେଖିବା ପୂର୍ବରୁ ଏହାର ଗର୍ଜନ ଶୁଣିବା ଆମକୁ ରୋମାଞ୍ଚିତ କରିଦେଲା। ଏତେ ପରିମାଣର ପାଣି ତଳକୁ ପଡ଼ିବା ଦେଖିବା ଏକ ଅଦ୍ଭୁତ ଦୃଶ୍ୟ ଥିଲା। ଏହା ପ୍ରକୃତିର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ଏବଂ ସୁନ୍ଦର ରୂପ।",
+                    "ଆମେ ନୀଳ ରଙ୍ଗର ବର୍ଷା ପୋଷାକ ପିନ୍ଧି 'ମେଡ୍ ଅଫ୍ ଦି ମିଷ୍ଟ' ଡଙ୍ଗାରେ ବସିଲୁ। ଯେତେବେଳେ ଡଙ୍ଗା ଝରଣା ପାଖକୁ ଗଲା, ଆମେ ପାଣିରେ ଭିଜିଗଲୁ। ଥଣ୍ଡା ଲାଗୁଥିଲା କିନ୍ତୁ ଆମେ ବହୁତ ଖୁସି ଥିଲୁ। ଶବ୍ଦ ବହୁତ ଜୋର ଥିଲା।",
+                    "ରାତିରେ ଝରଣାଗୁଡ଼ିକ ଆଲୋକରେ ସଜ୍ଜିତ ହୋଇଗଲା। ରଙ୍ଗୀନ ଆଲୋକ ପାଣିକୁ ଲାଲ, ନୀଳ ଏବଂ ବାଇଗଣୀ ରଙ୍ଗରେ ପରିଣତ କଲା। ଏହା ଏକ ଯାଦୁକରୀ ଦୃଶ୍ୟ ଥିଲା।",
+                    "ସେଠାରେ ଛିଡ଼ା ହୋଇ ପାଣିକୁ ଦେଖିବା ଏକ ଆଧ୍ୟାତ୍ମିକ ଅନୁଭୂତି ଥିଲା।",
+                    "ଫେରିବା ବାଟରେ ଆମେ ଶାନ୍ତ ଥିଲୁ, କାରଣ ଆମେ ଏକ ଆଶ୍ଚର୍ଯ୍ୟଜନକ ଦୃଶ୍ୟ ଦେଖିଥିଲୁ। ନିଆଗ୍ରା କେବଳ ଏକ ଝରଣା ନଥିଲା; ଏହା ପ୍ରକୃତିର ଏକ ବିଶାଳ ରୂପ ଥିଲା।"
+                ],
+                audioSrc: "./episode_5_niagara/audio_or.mp3"
+            }
+        };
+
+        const elements = { pageTitle: document.getElementById('page-title'), mainTitle: document.getElementById('main-title'), subtitle: document.getElementById('episode-subtitle'), storyText: document.getElementById('story-text'), prevEpLinkText: document.getElementById('prev-ep-link-text'), nextEpLinkText: document.getElementById('next-ep-link-text'), langButtons: document.querySelectorAll('.lang-button') };
+        const audio = document.getElementById('podcast-audio');
+        const icon = document.getElementById('play-btn').querySelector('i');
+        const bars = document.querySelectorAll('.waveform-bar');
+        const progressFill = document.getElementById('progress-fill');
+        const progressContainer = document.getElementById('progress-container');
+        const timeDisplay = document.getElementById('current-time');
+
+        function setLanguage(lang) {
+            const t = translations[lang];
+            const wasPlaying = !audio.paused;
+            if (audio.src !== t.audioSrc && t.audioSrc) { audio.src = t.audioSrc; if (wasPlaying) audio.play(); }
+            elements.pageTitle.textContent = t.pageTitle; elements.mainTitle.innerHTML = t.mainTitle; elements.subtitle.textContent = t.subtitle; elements.prevEpLinkText.textContent = t.prevLink; elements.nextEpLinkText.textContent = t.nextLink;
+            elements.storyText.innerHTML = t.story.map((p, i) => `<p class="${i === t.story.length - 1 ? 'italic text-white font-medium border-l-2 border-[#fbbf24] pl-3 py-1' : ''}">${p}</p>`).join('');
+            elements.langButtons.forEach(b => { b.classList.remove('selected'); if (b.id === `lang-${lang}`) b.classList.add('selected'); });
+            document.documentElement.lang = lang === 'hi' ? 'hi-IN' : lang === 'or' ? 'or-IN' : 'en';
+            localStorage.setItem('podcastLang', lang);
+        }
+
+        const waveformContainer = document.getElementById('waveform');
+        for (let i = 0; i < 40; i++) { const bar = document.createElement('div'); bar.className = `waveform-bar bar-${(i % 8) + 1}`; bar.style.height = Math.max(15, Math.random() * 80) + '%'; waveformContainer.appendChild(bar); }
+        function formatTime(s) { const m = Math.floor(s / 60); const sc = Math.floor(s % 60); return `${m < 10 ? '0' : ''}${m}:${sc < 10 ? '0' : ''}${sc}`; }
+        function togglePlay() { if (audio.paused) audio.play(); else audio.pause(); }
+        audio.addEventListener('play', () => { icon.classList.replace('fa-play', 'fa-pause'); icon.classList.remove('ml-1'); bars.forEach(b => b.classList.add('active')); });
+        audio.addEventListener('pause', () => { icon.classList.replace('fa-pause', 'fa-play'); icon.classList.add('ml-1'); bars.forEach(b => b.classList.remove('active')); });
+        audio.addEventListener('timeupdate', () => { progressFill.style.width = `${(audio.currentTime / audio.duration) * 100 || 0}%`; timeDisplay.textContent = formatTime(audio.currentTime); });
+        progressContainer.addEventListener('click', (e) => { audio.currentTime = (e.offsetX / progressContainer.clientWidth) * audio.duration; });
+        window.skip = (s) => audio.currentTime += s;
+        document.getElementById('play-btn').addEventListener('click', togglePlay);
+
+        const slideshowImage = document.getElementById('slideshow-image');
+        const imageSources = ["https://images.unsplash.com/photo-1544464168-d057a75908b9?q=80&w=2070&auto=format&fit=crop", "https://images.unsplash.com/photo-1636207543865-acf5ad3e3629?q=80&w=2070&auto=format&fit=crop", "https://images.unsplash.com/photo-1534067783865-9c565a9ec674?q=80&w=2187&auto=format&fit=crop"];
+        let currentImageIndex = 0;
+        setTimeout(() => { setInterval(() => { slideshowImage.classList.add('opacity-0'); setTimeout(() => { currentImageIndex = (currentImageIndex + 1) % imageSources.length; slideshowImage.src = imageSources[currentImageIndex]; slideshowImage.classList.remove('opacity-0'); }, 1000); }, 5000); }, 5000);
+        document.addEventListener('DOMContentLoaded', () => setLanguage(localStorage.getItem('podcastLang') || 'en'));
+    </script>
+</body>
+</html>

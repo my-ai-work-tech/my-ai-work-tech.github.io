@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">The Explorer's Tales - Episode 6</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Roboto:wght@300;400;500&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans+Oriya&display=swap');
+
+        :root { --slate-800: #374151; --slate-900: #1f2937; --gold-accent: #fbbf24; }
+        body { font-family: 'Roboto', 'Noto Sans Devanagari', 'Noto Sans Oriya', sans-serif; background-color: #1a1a1a; color: white; overflow-x: hidden; }
+        .font-heading { font-family: 'Oswald', sans-serif; }
+        .language-selector { position: absolute; top: 1rem; right: 1rem; z-index: 50; }
+        .lang-button.selected { background-color: #fbbf24; color: #1a1a1a; font-weight: 700; }
+        .waveform-bar { width: 4px; background-color: rgba(255, 255, 255, 0.6); border-radius: 9999px; animation: wave 1s ease-in-out infinite; animation-play-state: paused; }
+        .waveform-bar.active { background-color: white; animation-play-state: running; }
+        @keyframes wave { 0%, 100% { height: 10%; } 50% { height: 100%; } }
+        .bar-1 { animation-duration: 0.8s; } .bar-2 { animation-duration: 1.1s; } .bar-3 { animation-duration: 1.3s; }
+        .bar-4 { animation-duration: 0.9s; } .bar-5 { animation-duration: 1.2s; } .bar-6 { animation-duration: 0.7s; }
+        .bar-7 { animation-duration: 1.4s; } .bar-8 { animation-duration: 1.0s; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #2d3748; } ::-webkit-scrollbar-thumb { background: #718096; border-radius: 3px; }
+        .live-pulse { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+    </style>
+</head>
+<body class="h-screen w-full flex items-center justify-center bg-gray-900 p-0 md:p-8">
+
+    <div class="language-selector md:block hidden flex space-x-2 bg-gray-700 p-2 rounded-lg shadow-lg">
+        <button id="lang-en" onclick="setLanguage('en')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">English</button>
+        <button id="lang-hi" onclick="setLanguage('hi')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">हिन्दी</button>
+        <button id="lang-or" onclick="setLanguage('or')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">ଓଡ଼ିଆ</button>
+    </div>
+
+    <div class="bg-slate-700 w-full max-w-6xl h-full md:h-[90vh] rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
+        <div class="w-full md:w-1/2 bg-[#3b4455] p-6 md:p-10 flex flex-col justify-between h-full relative z-10 overflow-y-auto">
+            <div class="mb-6">
+                <h1 class="font-heading text-4xl md:text-5xl font-bold tracking-tight text-white mb-2 uppercase leading-none" id="main-title">The<br>Explorer's Tales</h1>
+                <p class="text-[#fbbf24] text-lg font-medium tracking-wide" id="episode-subtitle">Episode 6: Trip to DC</p>
+            </div>
+
+            <div class="bg-[#2d3646] p-4 rounded-xl mb-6 shadow-inner border border-gray-600/30">
+                <audio id="podcast-audio" src=""></audio>
+                <div class="h-12 flex items-center justify-center gap-1 mb-4 w-full px-2" id="waveform"></div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-gray-400 font-mono" id="current-time">00:00</span>
+                    <div class="flex items-center gap-6">
+                        <button class="text-gray-400 hover:text-white transition" onclick="skip(-10)"><i class="fas fa-step-backward"></i></button>
+                        <button id="play-btn" class="w-12 h-12 flex items-center justify-center rounded-full border-2 border-white text-white hover:bg-white hover:text-gray-900 transition duration-300"><i class="fas fa-play ml-1"></i></button>
+                        <button class="text-gray-400 hover:text-white transition" onclick="skip(10)"><i class="fas fa-step-forward"></i></button>
+                    </div>
+                    <button class="text-gray-400 hover:text-white transition"><i class="far fa-comment-alt"></i></button>
+                </div>
+                <div class="w-full bg-gray-600 h-1 rounded-full overflow-hidden cursor-pointer group" id="progress-container">
+                    <div id="progress-fill" class="bg-white h-full w-[0%] group-hover:bg-[#fbbf24] transition-all duration-100 ease-linear"></div>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-gray-300 font-light leading-relaxed text-sm md:text-base overflow-y-auto pr-2 custom-scrollbar" id="story-text"></div>
+            
+            <div class="pt-4 mt-4 border-t border-gray-600/50 flex flex-col gap-4">
+                <div class="flex justify-between">
+                    <a href="episode_5_trip_to_niagara_falls.html" class="text-sm font-medium text-gray-400 hover:text-white transition duration-200 flex items-center gap-2"><i class="fas fa-arrow-left"></i> <span id="prev-ep-link-text">Previous Episode</span></a>
+                    <a href="episode_7_indian_festivals_in_usa.html" class="text-sm font-medium text-[#fbbf24] hover:text-white transition duration-200 flex items-center gap-2"><span id="next-ep-link-text">Next Episode</span> <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="flex flex-col items-center gap-2 mt-2 pt-4 border-t border-gray-600/30">
+                    <span id="follow-us-text" class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Follow Us</span>
+                    <div class="flex gap-6">
+                        <a href="https://www.facebook.com/share/1PrNyjm3TK/" class="text-gray-400 hover:text-[#1877F2] hover:scale-110 transition"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="https://www.instagram.com/drbasantabehera?utm_source=qr&igsh=MW9zbjI5bGZkeGNudw==" class="text-gray-400 hover:text-[#E4405F] hover:scale-110 transition"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="https://youtube.com/@drbasantabehera1276?si=W5xkCeNhOqF0m5rn" class="text-gray-400 hover:text-[#FF0000] hover:scale-110 transition"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#3b4455] to-transparent pointer-events-none md:block hidden"></div>
+        </div>
+
+        <div class="w-full md:w-1/2 relative h-96 md:h-full bg-black flex flex-col border-l border-gray-800">
+            <div class="relative w-full h-1/2 overflow-hidden group">
+                <div class="absolute top-4 right-4 z-20 flex items-center gap-2 bg-red-600/90 text-white px-3 py-1 rounded text-xs font-bold tracking-wider shadow-lg backdrop-blur-sm">
+                    <div class="w-2 h-2 bg-white rounded-full live-pulse"></div> ON AIR
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-[#3b4455] via-transparent to-transparent opacity-40 z-10 pointer-events-none"></div>
+                <img src="https://images.unsplash.com/photo-1543862214-5d51375d8e79?q=80&w=2070&auto=format&fit=crop" alt="Washington DC" class="absolute inset-0 w-full h-full object-cover opacity-90">
+                <div class="absolute bottom-3 left-3 z-20 bg-black/60 px-2 py-1 rounded text-[10px] font-bold tracking-widest text-white/90 uppercase border-l-2 border-[#fbbf24]">Capital City</div>
+            </div>
+            <div class="relative w-full h-1/2 overflow-hidden border-t-2 border-gray-800">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#3b4455] via-transparent to-transparent opacity-30 z-10 pointer-events-none"></div>
+                <img id="slideshow-image" src="https://images.unsplash.com/photo-1555109307-f7d9da25c244?q=80&w=2073&auto=format&fit=crop" alt="White House" class="absolute inset-0 w-full h-full object-cover object-center opacity-90 transition-opacity duration-1000 ease-in-out">
+                <div class="absolute bottom-3 left-3 z-20 bg-black/60 px-2 py-1 rounded text-[10px] font-bold tracking-widest text-white/90 uppercase border-l-2 border-blue-400">Historic Sites</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            'en': {
+                pageTitle: "The Explorer's Tales - Episode 6",
+                mainTitle: "The<br>Explorer's Tales",
+                subtitle: "Episode 6: Trip to DC",
+                prevLink: "Previous: Niagara Falls",
+                nextLink: "Next: Indian Festivals",
+                story: [
+                    "Our final major adventure took us to Washington D.C., the heart of American politics and history. Visiting the capital is different from any other city; there's a weight to the air, a sense of importance.",
+                    "To explore the city, we hopped onto a <strong>Red Double-Decker Bus</strong>. Sitting on the <strong>open top floor</strong> was an exhilarating experience. The wind in our hair and the unobstructed views of the city's grand architecture made the ride unforgettable. We hopped off at key places to explore and hopped back on to continue our journey, enjoying the scenic beauty from the top deck.",
+                    "Walking towards the Lincoln Memorial, I was struck by the sheer scale of the statues and monuments. Standing at the feet of Abraham Lincoln, reading the Gettysburg Address etched into the stone, was a moment of deep reflection. The reflecting pool stretched out before us, mirroring the Washington Monument in the distance.",
+                    "We saw the White House from a distance. It's smaller in real life than it looks on TV, but the security and the atmosphere around it make it feel impenetrable. Knowing that the decisions made inside those walls affect the entire world was a sobering thought.",
+                    "The Smithsonian museums were a treasure trove. We visited the Air and Space Museum, which was particularly fascinating. Seeing the history of flight, from the Wright brothers to the moon landing, was inspiring for all of us.",
+                    "DC isn't just about buildings; it's about history. Every corner tells a story of struggle, leadership, and democracy. It was the perfect educational end to our sightseeing.",
+                    "As we drove back, I thought about the diversity of this country—from the natural fury of Niagara to the quiet power of DC. It has been a journey of a lifetime."
+                ],
+                audioSrc: "./episode_6_dc/audio_en.mp3" 
+            },
+            'hi': {
+                pageTitle: "द एक्सप्लोरर टेल्स - एपिसोड 6",
+                mainTitle: "द<br>एक्सप्लोरर टेल्स",
+                subtitle: "एपिसोड 6: डीसी की यात्रा",
+                prevLink: "पिछला: नियाग्रा फॉल्स",
+                nextLink: "अगला: भारतीय त्योहार",
+                story: [
+                    "हमारा अंतिम प्रमुख रोमांच हमें अमेरिकी राजनीति और इतिहास के केंद्र वाशिंगटन डी.सी. ले गया। राजधानी का दौरा करना किसी भी अन्य शहर से अलग है; हवा में एक वजन है, महत्व की भावना है।",
+                    "शहर घूमने के लिए, हम एक <strong>लाल डबल-डेकर बस</strong> (Red Double-Decker Bus) में सवार हुए। <strong>खुली ऊपरी मंजिल (Open top floor)</strong> पर बैठना एक रोमांचक अनुभव था। हमारे बालों में हवा और शहर की भव्य वास्तुकला के अबाधित दृश्यों ने सवारी को अविस्मरणीय बना दिया। हम प्रमुख जगहों पर उतरते और अपनी यात्रा जारी रखने के लिए वापस बस में चढ़ जाते, और ऊपर से नज़ारों का आनंद लेते।",
+                    "लिंकन मेमोरियल की ओर चलते हुए, मैं मूर्तियों और स्मारकों के विशाल पैमाने से प्रभावित हुआ। अब्राहम लिंकन के चरणों में खड़े होकर, पत्थर पर खुदे गेटिसबर्ग एड्रेस को पढ़ना गहरे चिंतन का क्षण था। हमारे सामने रिफ्लेक्टिंग पूल फैला हुआ था, जिसमें दूर वाशिंगटन स्मारक का प्रतिबिंब दिखाई दे रहा था।",
+                    "हमने दूर से व्हाइट हाउस देखा। टीवी पर दिखने की तुलना में यह असल जीवन में छोटा है, लेकिन इसके चारों ओर की सुरक्षा और माहौल इसे अभेद्य महसूस कराते हैं। यह जानना कि उन दीवारों के भीतर लिए गए निर्णय पूरी दुनिया को प्रभावित करते हैं, एक गंभीर विचार था।",
+                    "स्मिथसोनियन संग्रहालय एक खजाना थे। हमने वायु और अंतरिक्ष संग्रहालय का दौरा किया, जो विशेष रूप से आकर्षक था। राइट बंधुओं से लेकर चाँद पर उतरने तक की उड़ान के इतिहास को देखना हम सभी के लिए प्रेरणादायक था।",
+                    "डीसी सिर्फ इमारतों के बारे में नहीं है; यह इतिहास के बारे में है। हर कोना संघर्ष, नेतृत्व और लोकतंत्र की कहानी कहता है। यह हमारे दर्शनीय स्थलों की यात्रा का एक आदर्श शैक्षिक अंत था।",
+                    "वापस गाड़ी चलाते समय, मैंने इस देश की विविधता के बारे में सोचा—नियाग्रा के प्राकृतिक प्रकोप से लेकर डीसी की शांत शक्ति तक। यह जीवन भर की यात्रा रही है।"
+                ],
+                audioSrc: "./episode_6_dc/audio_hi.mp3"
+            },
+            'or': {
+                pageTitle: "ଦି ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ - ଏପିସୋଡ୍ ୬",
+                mainTitle: "ଦି<br>ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ",
+                subtitle: "ଏପିସୋଡ୍ ୬: ଡିସି ଯାତ୍ରା",
+                prevLink: "ପୂର୍ବ: ନିଆଗ୍ରା ଫଲ୍ସ",
+                nextLink: "ପରବର୍ତ୍ତୀ: ଭାରତୀୟ ପର୍ବ",
+                story: [
+                    "ଆମର ଶେଷ ପ୍ରମୁଖ ଯାତ୍ରା ଆମକୁ ଆମେରିକାର ରାଜନୀତି ଏବଂ ଇତିହାସର କେନ୍ଦ୍ର ୱାଶିଂଟନ୍ ଡି.ସି. କୁ ନେଇଗଲା। ରାଜଧାନୀ ବୁଲିବା ଅନ୍ୟ ସହରଠାରୁ ଅଲଗା।",
+                    "ସହର ବୁଲିବା ପାଇଁ ଆମେ ଏକ **ନାଲି ରଙ୍ଗର ଡବଲ୍-ଡେକର୍ ବସ୍** ରେ ବସିଲୁ। **ଉପର ମହଲାର ଖୋଲା ଛାତରେ (Open top floor)** ବସିବା ଏକ ନିଆରା ଅନୁଭୂତି ଥିଲା। ସେଠାରୁ ସହରର ଦୃଶ୍ୟ ବହୁତ ସୁନ୍ଦର ଦେଖାଯାଉଥିଲା। ଆମେ ବିଭିନ୍ନ ସ୍ଥାନରେ ଓହ୍ଲାଇ ବୁଲିଲୁ ଏବଂ ପୁଣି ବସ୍ ରେ ବସି ଯାତ୍ରା କଲୁ ଏବଂ ଉପରୁ ସୁନ୍ଦର ଦୃଶ୍ୟ ଉପଭୋଗ କଲୁ।",
+                    "ଲିଙ୍କନ୍ ମେମୋରିଆଲ୍ ଆଡକୁ ଯିବାବେଳେ, ମୁଁ ପ୍ରତିମୂର୍ତ୍ତି ଏବଂ ସ୍ମାରକୀଗୁଡ଼ିକର ବିଶାଳ ଆକାର ଦେଖି ଆଶ୍ଚର୍ଯ୍ୟ ହୋଇଗଲି। ଆବ୍ରାହମ୍ ଲିଙ୍କନ୍‌ଙ୍କ ପାଦତଳେ ଛିଡ଼ା ହେବା ଏକ ଗଭୀର ମୁହୂର୍ତ୍ତ ଥିଲା।",
+                    "ଆମେ ଦୂରରୁ ହ୍ୱାଇଟ୍ ହାଉସ୍ ଦେଖିଲୁ। ଟିଭିରେ ଯେମିତି ଦେଖାଯାଏ, ସତରେ ଏହା ତା’ଠାରୁ ଛୋଟ, କିନ୍ତୁ ସୁରକ୍ଷା ବହୁତ କଡ଼ା।",
+                    "ସ୍ମିଥସୋନିଆନ୍ ସଂଗ୍ରହାଳୟଗୁଡ଼ିକ ବହୁତ ସୁନ୍ଦର ଥିଲା। ଆମେ ଏୟାର୍ ଆଣ୍ଡ ସ୍ପେସ୍ ମ୍ୟୁଜିୟମ୍ ବୁଲିଲୁ। ବିମାନ ଉଡ଼ାଣର ଇତିହାସ ଦେଖିବା ଆମ ସମସ୍ତଙ୍କ ପାଇଁ ପ୍ରେରଣାଦାୟକ ଥିଲା।",
+                    "ଡିସି କେବଳ କୋଠାବାଡ଼ି ବିଷୟରେ ନୁହେଁ; ଏହା ଇତିହାସ ବିଷୟରେ। ଏହା ଆମ ଯାତ୍ରାର ଏକ ସୁନ୍ଦର ଅନ୍ତ ଥିଲା।",
+                    "ଫେରିବା ବାଟରେ, ମୁଁ ଏହି ଦେଶର ବିବିଧତା ବିଷୟରେ ଚିନ୍ତା କଲି—ନିଆଗ୍ରାର ପ୍ରାକୃତିକ ଶକ୍ତି ଠାରୁ ଡିସିର ଶାନ୍ତ ଶକ୍ତି ପର୍ଯ୍ୟନ୍ତ। ଏହା ଏକ ଅବିସ୍ମରଣୀୟ ଯାତ୍ରା ଥିଲା।"
+                ],
+                audioSrc: "./episode_6_dc/audio_or.mp3"
+            }
+        };
+
+        const elements = { pageTitle: document.getElementById('page-title'), mainTitle: document.getElementById('main-title'), subtitle: document.getElementById('episode-subtitle'), storyText: document.getElementById('story-text'), prevEpLinkText: document.getElementById('prev-ep-link-text'), nextEpLinkText: document.getElementById('next-ep-link-text'), langButtons: document.querySelectorAll('.lang-button') };
+        const audio = document.getElementById('podcast-audio');
+        const icon = document.getElementById('play-btn').querySelector('i');
+        const bars = document.querySelectorAll('.waveform-bar');
+        const progressFill = document.getElementById('progress-fill');
+        const progressContainer = document.getElementById('progress-container');
+        const timeDisplay = document.getElementById('current-time');
+
+        function setLanguage(lang) {
+            const t = translations[lang];
+            const wasPlaying = !audio.paused;
+            if (audio.src !== t.audioSrc && t.audioSrc) { audio.src = t.audioSrc; if (wasPlaying) audio.play(); }
+            elements.pageTitle.textContent = t.pageTitle; elements.mainTitle.innerHTML = t.mainTitle; elements.subtitle.textContent = t.subtitle; elements.prevEpLinkText.textContent = t.prevLink; elements.nextEpLinkText.textContent = t.nextLink;
+            elements.storyText.innerHTML = t.story.map((p, i) => `<p class="${i === t.story.length - 1 ? 'italic text-white font-medium border-l-2 border-[#fbbf24] pl-3 py-1' : ''}">${p}</p>`).join('');
+            elements.langButtons.forEach(b => { b.classList.remove('selected'); if (b.id === `lang-${lang}`) b.classList.add('selected'); });
+            document.documentElement.lang = lang === 'hi' ? 'hi-IN' : lang === 'or' ? 'or-IN' : 'en';
+            localStorage.setItem('podcastLang', lang);
+        }
+
+        const waveformContainer = document.getElementById('waveform');
+        for (let i = 0; i < 40; i++) { const bar = document.createElement('div'); bar.className = `waveform-bar bar-${(i % 8) + 1}`; bar.style.height = Math.max(15, Math.random() * 80) + '%'; waveformContainer.appendChild(bar); }
+        function formatTime(s) { const m = Math.floor(s / 60); const sc = Math.floor(s % 60); return `${m < 10 ? '0' : ''}${m}:${sc < 10 ? '0' : ''}${sc}`; }
+        function togglePlay() { if (audio.paused) audio.play(); else audio.pause(); }
+        audio.addEventListener('play', () => { icon.classList.replace('fa-play', 'fa-pause'); icon.classList.remove('ml-1'); bars.forEach(b => b.classList.add('active')); });
+        audio.addEventListener('pause', () => { icon.classList.replace('fa-pause', 'fa-play'); icon.classList.add('ml-1'); bars.forEach(b => b.classList.remove('active')); });
+        audio.addEventListener('timeupdate', () => { progressFill.style.width = `${(audio.currentTime / audio.duration) * 100 || 0}%`; timeDisplay.textContent = formatTime(audio.currentTime); });
+        progressContainer.addEventListener('click', (e) => { audio.currentTime = (e.offsetX / progressContainer.clientWidth) * audio.duration; });
+        window.skip = (s) => audio.currentTime += s;
+        document.getElementById('play-btn').addEventListener('click', togglePlay);
+
+        const slideshowImage = document.getElementById('slideshow-image');
+        const imageSources = ["https://images.unsplash.com/photo-1555109307-f7d9da25c244?q=80&w=2073&auto=format&fit=crop", "https://images.unsplash.com/photo-1596205763566-a33758b73f8d?q=80&w=2070&auto=format&fit=crop", "https://images.unsplash.com/photo-1627918511677-4c272a27d2c6?q=80&w=2070&auto=format&fit=crop"];
+        let currentImageIndex = 0;
+        setTimeout(() => { setInterval(() => { slideshowImage.classList.add('opacity-0'); setTimeout(() => { currentImageIndex = (currentImageIndex + 1) % imageSources.length; slideshowImage.src = imageSources[currentImageIndex]; slideshowImage.classList.remove('opacity-0'); }, 1000); }, 5000); }, 5000);
+        document.addEventListener('DOMContentLoaded', () => setLanguage(localStorage.getItem('podcastLang') || 'en'));
+    </script>
+</body>
+</html>

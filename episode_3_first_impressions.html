@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">The Explorer's Tales - Episode 3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Markdown Parser for AI responses -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Roboto:wght@300;400;500&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans+Oriya&display=swap');
+
+        :root {
+            --slate-800: #374151;
+            --slate-900: #1f2937;
+            --gold-accent: #fbbf24;
+        }
+
+        body {
+            font-family: 'Roboto', 'Noto Sans Devanagari', 'Noto Sans Oriya', sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .font-heading {
+            font-family: 'Oswald', sans-serif;
+        }
+
+        .language-selector {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 50;
+        }
+
+        .lang-button.selected {
+            background-color: #fbbf24;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        .waveform-bar {
+            width: 4px;
+            background-color: rgba(255, 255, 255, 0.6);
+            border-radius: 9999px;
+            animation: wave 1s ease-in-out infinite;
+            animation-play-state: paused;
+        }
+
+        .waveform-bar.active {
+            background-color: white;
+            animation-play-state: running;
+        }
+
+        @keyframes wave {
+            0%, 100% { height: 10%; }
+            50% { height: 100%; }
+        }
+
+        .bar-1 { animation-duration: 0.8s; }
+        .bar-2 { animation-duration: 1.1s; }
+        .bar-3 { animation-duration: 1.3s; }
+        .bar-4 { animation-duration: 0.9s; }
+        .bar-5 { animation-duration: 1.2s; }
+        .bar-6 { animation-duration: 0.7s; }
+        .bar-7 { animation-duration: 1.4s; }
+        .bar-8 { animation-duration: 1.0s; }
+        
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #2d3748;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #718096;
+            border-radius: 3px;
+        }
+
+        .live-pulse {
+            animation: pulse-red 2s infinite;
+        }
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+
+        /* --- AI Features Styles --- */
+        .ai-fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            background-color: #fbbf24;
+            color: #1f2937;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .ai-fab:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+        }
+
+        .chat-modal {
+            position: fixed;
+            bottom: 6.5rem;
+            right: 2rem;
+            width: 350px;
+            height: 500px;
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform-origin: bottom right;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            pointer-events: none;
+        }
+        .chat-modal.open {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: all;
+        }
+
+        .chat-header {
+            background-color: #1a202c;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4a5568;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .chat-input-area {
+            padding: 1rem;
+            background-color: #1a202c;
+            border-top: 1px solid #4a5568;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .message.user {
+            background-color: #fbbf24;
+            color: #1f2937;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+        .message.ai {
+            background-color: #4a5568;
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 12px;
+            background: #4a5568;
+            border-radius: 12px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #cbd5e0;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .summary-box.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body class="h-screen w-full flex items-center justify-center bg-gray-900 p-0 md:p-8">
+
+    <!-- Language Selector -->
+    <div class="language-selector md:block hidden flex space-x-2 bg-gray-700 p-2 rounded-lg shadow-lg">
+        <button id="lang-en" onclick="setLanguage('en')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">English</button>
+        <button id="lang-hi" onclick="setLanguage('hi')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">हिन्दी</button>
+        <button id="lang-or" onclick="setLanguage('or')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">ଓଡ଼ିଆ</button>
+    </div>
+
+    <!-- Main Card Container -->
+    <div class="bg-slate-700 w-full max-w-6xl h-full md:h-[90vh] rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
+        
+        <!-- Left Panel: Content & Player -->
+        <div class="w-full md:w-1/2 bg-[#3b4455] p-6 md:p-10 flex flex-col justify-between h-full relative z-10 overflow-y-auto">
+            
+            <!-- Header -->
+            <div class="mb-6">
+                <h1 class="font-heading text-4xl md:text-5xl font-bold tracking-tight text-white mb-2 uppercase leading-none" id="main-title">
+                    The<br>Explorer's Tales
+                </h1>
+                <p class="text-[#fbbf24] text-lg font-medium tracking-wide" id="episode-subtitle">
+                    Episode 3: First Impressions
+                </p>
+            </div>
+
+            <!-- Audio Player UI -->
+            <div class="bg-[#2d3646] p-4 rounded-xl mb-6 shadow-inner border border-gray-600/30">
+                <audio id="podcast-audio" src=""></audio>
+
+                <div class="h-12 flex items-center justify-center gap-1 mb-4 w-full px-2" id="waveform"></div>
+
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-gray-400 font-mono" id="current-time">00:00</span>
+                    <div class="flex items-center gap-6">
+                        <button class="text-gray-400 hover:text-white transition" onclick="skip(-10)"><i class="fas fa-step-backward"></i></button>
+                        <button id="play-btn" class="w-12 h-12 flex items-center justify-center rounded-full border-2 border-white text-white hover:bg-white hover:text-gray-900 transition duration-300">
+                            <i class="fas fa-play ml-1"></i>
+                        </button>
+                        <button class="text-gray-400 hover:text-white transition" onclick="skip(10)"><i class="fas fa-step-forward"></i></button>
+                    </div>
+                    <button class="text-gray-400 hover:text-white transition"><i class="far fa-comment-alt"></i></button>
+                </div>
+
+                <div class="w-full bg-gray-600 h-1 rounded-full overflow-hidden cursor-pointer group" id="progress-container">
+                    <div id="progress-fill" class="bg-white h-full w-[0%] group-hover:bg-[#fbbf24] transition-all duration-100 ease-linear"></div>
+                </div>
+            </div>
+
+            <!-- AI Summary Button -->
+            <div class="mb-4">
+                <button id="btn-summarize" onclick="generateSummary()" class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#fbbf24] hover:text-white transition border border-[#fbbf24] px-3 py-1.5 rounded hover:bg-[#fbbf24] hover:text-gray-900">
+                    <i class="fas fa-magic"></i> ✨ Quick Summary
+                </button>
+                <div id="summary-content" class="summary-box mt-2">
+                    <!-- Summary injected here -->
+                </div>
+            </div>
+
+            <!-- Story Text -->
+            <div class="space-y-4 text-gray-300 font-light leading-relaxed text-sm md:text-base overflow-y-auto pr-2 custom-scrollbar" id="story-text">
+                <!-- Content set by JS -->
+            </div>
+            
+            <!-- Navigation Links -->
+            <div class="pt-4 mt-4 border-t border-gray-600/50 flex flex-col gap-4">
+                <div class="flex justify-between">
+                    <a href="episode_2_Journey_start_from_india.html" class="text-sm font-medium text-gray-400 hover:text-white transition duration-200 flex items-center gap-2">
+                        <i class="fas fa-arrow-left"></i> <span id="prev-ep-link-text">Previous Episode</span>
+                    </a>
+                    <a href="episode_4_here_and_there_in_usa.html" class="text-sm font-medium text-[#fbbf24] hover:text-white transition duration-200 flex items-center gap-2">
+                        <span id="next-ep-link-text">Next Episode</span> <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+                 <!-- Social Media Handles -->
+                 <div class="flex flex-col items-center gap-2 mt-2 pt-4 border-t border-gray-600/30">
+                    <span id="follow-us-text" class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Follow Us</span>
+                    <div class="flex gap-6">
+                        <a href="https://www.facebook.com/share/1PrNyjm3TK/" class="text-gray-400 hover:text-[#1877F2] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="https://www.instagram.com/drbasantabehera?utm_source=qr&igsh=MW9zbjI5bGZkeGNudw==" class="text-gray-400 hover:text-[#E4405F] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="https://youtube.com/@drbasantabehera1276?si=W5xkCeNhOqF0m5rn" class="text-gray-400 hover:text-[#FF0000] transition-all duration-300 transform hover:scale-110 hover:-translate-y-1"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#3b4455] to-transparent pointer-events-none md:block hidden"></div>
+        </div>
+
+        <!-- Right Panel: Image -->
+        <div class="w-full md:w-1/2 relative h-96 md:h-full bg-black flex flex-col border-l border-gray-800">
+            <div class="relative w-full h-1/2 overflow-hidden group">
+                <div class="absolute top-4 right-4 z-20 flex items-center gap-2 bg-red-600/90 text-white px-3 py-1 rounded text-xs font-bold tracking-wider shadow-lg backdrop-blur-sm">
+                    <div class="w-2 h-2 bg-white rounded-full live-pulse"></div>
+                    ON AIR
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-[#3b4455] via-transparent to-transparent opacity-40 z-10 pointer-events-none"></div>
+
+                <!-- Static Image (Initially Visible) -->
+                <img id="top-static-image" src="./podcast_studio.JPEG" alt="Chicago Skyline" alt="Chicago Skyline" class="absolute inset-0 w-full h-full object-cover opacity-90 transition-opacity duration-1000 ease-in-out z-10">
+                
+                <div class="absolute bottom-3 left-3 z-20 bg-black/60 px-2 py-1 rounded text-[10px] font-bold tracking-widest text-white/90 uppercase border-l-2 border-[#fbbf24]">
+                    The Studio
+                </div>
+            </div>
+
+            <div class="relative w-full h-1/2 overflow-hidden border-t-2 border-gray-800">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#3b4455] via-transparent to-transparent opacity-30 z-10 pointer-events-none"></div>
+                <img id="slideshow-image" src="./episode_3_first_impressions/pics/chicago_toll.JPG" alt="USA highway" class="absolute inset-0 w-full h-full object-cover object-center opacity-90 transition-opacity duration-1000 ease-in-out">
+                <div class="absolute bottom-3 left-3 z-20 bg-black/60 px-2 py-1 rounded text-[10px] font-bold tracking-widest text-white/90 uppercase border-l-2 border-blue-400">
+                    Flash Back
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Floating Action Button -->
+    <div class="ai-fab" onclick="toggleChat()">
+        <i class="fas fa-robot fa-lg"></i>
+    </div>
+
+    <!-- AI Chat Modal -->
+    <div class="chat-modal" id="chat-modal">
+        <div class="chat-header">
+            <h3 class="font-heading text-sm font-bold text-white tracking-wider uppercase"><i class="fas fa-sparkles text-[#fbbf24] mr-2"></i> Explorer's AI Guide</h3>
+            <button onclick="toggleChat()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-messages custom-scrollbar" id="chat-messages">
+            <div class="message ai">
+                Hello! I'm your AI travel companion. Ask me anything about Chicago, Richmond (Ohio), or this episode! 🌍
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ask a question..." class="flex-1 bg-gray-700 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#fbbf24]" onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()" class="bg-[#fbbf24] text-gray-900 rounded px-3 hover:bg-yellow-400 transition"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            'en': {
+                pageTitle: "The Explorer's Tales - Episode 3",
+                mainTitle: "The<br>Explorer's Tales",
+                subtitle: "Episode 3: First Impressions",
+                prevLink: "Previous: The Journey",
+                nextLink: "Next: Here and There",
+                story: [
+                    "Stepping out of the Chicago airport, the first thing that hit us was the wind. It wasn't just air; it was a physical force, a chilly welcome from the Windy City. After the long flight from India, the crisp, cold air woke us up instantly.",
+                    "Seeing my son waiting for us was the highlight of the arrival. The fatigue of the 20+ hour journey melted away in that hug. We loaded our luggage into his car, but we didn't go straight home. Instead, we went to the home of some of my son's friends nearby. They welcomed us warmly and had prepared a delicious meal. We ate, chatted, and stayed there for the night to rest after our long travel.",
+                    "The next morning, refreshed, we started our journey to Richmond, Ohio, where my son lives and works. The drive itself was a revelation. Coming from the chaotic, vibrant streets of India, the American highways felt surreal. The roads were impossibly wide, the lanes disciplined. But what struck me most was the silence. No honking. Just a smooth, rhythmic flow of traffic.",
+                    "We finally arrived at my son's home in Richmond. It was a cozy haven against the cold outside. <strong>We were lucky to witness snow in the month of April in Ohio. It felt like nature was waiting for us to arrive, to snow one last time that year. The experience was serene.</strong> The heating system was a marvel to us, keeping the indoors pleasant while the world outside froze. It was our first real day in the USA, and as we settled in, the realization finally sank in: we are really here.",
+                    "The neighborhood looked straight out of a movie. Perfectly manicured lawns, wooden houses, and squirrels running freely—something you rarely see so close in our city back home. The air was clean, sharp, and silent.",
+                    "These first impressions—the order, the quiet, the cold, and the infrastructure—set the tone for our trip. It was a world of difference, literally and figuratively. We were ready to explore, but for now, we were just happy to be warm and together."
+                ],
+                audioSrc: "./episode_3_first_impressions/vid/audio_en.mp3" 
+            },
+            'hi': {
+                pageTitle: "द एक्सप्लोरर टेल्स - एपिसोड 3",
+                mainTitle: "द<br>एक्सप्लोरर टेल्स",
+                subtitle: "एपिसोड 3: पहली छाप",
+                prevLink: "पिछला: यात्रा की शुरुआत",
+                nextLink: "अगला: यहाँ और वहाँ",
+                story: [
+                    "शिकागो हवाई अड्डे से बाहर निकलते ही, जिस चीज़ ने हमें सबसे पहले महसूस हुई, वह थी हवा। यह सिर्फ हवा नहीं थी; यह एक शारीरिक बल था, 'विंडी सिटी' (हवाओं का शहर) से एक ठंडा स्वागत। भारत से लंबी उड़ान के बाद, उस ठंडी, ताजी हवा ने हमें तुरंत जगा दिया।",
+                    "मेरे बेटे को हमारा इंतज़ार करते देखना आगमन का सबसे खास पल था। 20 घंटे से अधिक की यात्रा की थकान उस एक गले मिलने में पिघल गई। हमने अपना सामान कार में लादा, लेकिन हम सीधे घर नहीं गए। हम पास ही रहने वाले मेरे बेटे के दोस्तों के घर गए। उन्होंने हमारा गर्मजोशी से स्वागत किया और हमारे लिए भोजन तैयार किया था। हमने खाना खाया और लंबी यात्रा के बाद आराम करने के लिए रात वहीं बिताई।",
+                    "अगली सुबह, हम रिचमंड, ओहियो के लिए रवाना हुए, जहाँ मेरा बेटा रहता है और काम करता है। वह ड्राइव अपने आप में एक अनोखा अनुभव था। भारत की शोरगुल वाली सड़कों से आने के बाद, अमेरिकी राजमार्ग किसी सपने जैसे लग रहे थे। सड़कें बहुत चौड़ी थीं, और अनुशासन अद्भुत था। जिस चीज़ ने मुझे सबसे ज़्यादा प्रभावित किया, वह थी शांति। कोई हॉर्न नहीं। बस यातायात का एक सहज प्रवाह।",
+                    "हम आखिरकार रिचमंड में मेरे बेटे के घर पहुँचे, जो बाहर की ठंड के बीच एक आरामदायक जगह थी। <strong>हम अप्रैल के महीने में ओहियो में बर्फबारी देखने के लिए भाग्यशाली थे। ऐसा लग रहा था जैसे प्रकृति हमारे आने का इंतज़ार कर रही थी, उस साल की आखिरी बार बर्फबारी करने के लिए। वह अनुभव बहुत ही शांत था।</strong> हीटिंग सिस्टम हमारे लिए एक चमत्कार था, जो घर के अंदर का मौसम सुहावना बनाए हुए था। अमेरिका में यह हमारा पहला असली दिन था, और हमें एहसास हुआ: हम वास्तव में यहाँ हैं।",
+                    "पड़ोस बिल्कुल किसी फिल्म जैसा लग रहा था। पूरी तरह से कटी हुई घास के मैदान, लकड़ी के घर, और गिलहरियाँ आज़ादी से दौड़ती हुईं—कुछ ऐसा जो हम अपने शहर में शायद ही कभी इतने करीब से देखते हैं। हवा साफ, तेज और शांत थी।",
+                    "ये पहली छाप—व्यवस्था, शांति, ठंड और बुनियादी ढांचा—ने हमारी यात्रा का टोन सेट कर दिया। यह सचमुच एक अलग दुनिया थी। हम खोजबीन के लिए तैयार थे, लेकिन अभी के लिए, हम बस गर्म और साथ होने पर खुश थे।"
+                ],
+                audioSrc: "./episode_3_first_impressions/audio_hi.mp3"
+            },
+            'or': {
+                pageTitle: "ଦି ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ - ଏପିସୋଡ୍ ୩",
+                mainTitle: "ଦି<br>ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ",
+                subtitle: "ଏପିସୋଡ୍ ୩: ପ୍ରଥମ ଛାପ",
+                prevLink: "ପୂର୍ବ: ଯାତ୍ରା ଆରମ୍ଭ",
+                nextLink: "ପରବର୍ତ୍ତୀ: ଏଠି ଓ ସେଠି",
+                story: [
+                    "ଶିକାଗୋ ବିମାନବନ୍ଦରରୁ ବାହାରିବା ମାତ୍ରେ, ଯାହା ଆମକୁ ପ୍ରଥମେ ଅନୁଭବ ହେଲା ତାହା ହେଉଛି ପବନ। ଏହା କେବଳ ପବନ ନଥିଲା; ଏହା ଥିଲା 'ୱିଣ୍ଡି ସିଟି'ରୁ ଏକ ଶୀତଳ ସ୍ୱାଗତ। ଭାରତରୁ ଦୀର୍ଘ ଯାତ୍ରା ପରେ, ସେହି ଥଣ୍ଡା ପବନ ଆମକୁ ତୁରନ୍ତ ସତେଜ କରିଦେଲା।",
+                    "ମୋ ପୁଅକୁ ଅପେକ୍ଷା କରିଥିବାର ଦେଖିବା ଥିଲା ସବୁଠାରୁ ଖୁସିର ମୁହୂର୍ତ୍ତ। ଯାତ୍ରାର କ୍ଳାନ୍ତି ସେହି ଆଲିଙ୍ଗନରେ ଦୂର ହୋଇଗଲା। ଆମେ ଜିନିଷପତ୍ର ଗାଡ଼ିରେ ରଖିଲୁ, କିନ୍ତୁ ଆମେ ସିଧା ଘରକୁ ଗଲୁ ନାହିଁ। ଆମେ ପାଖରେ ରହୁଥିବା ମୋ ପୁଅର ସାଙ୍ଗମାନଙ୍କ ଘରକୁ ଗଲୁ। ସେମାନେ ଆମକୁ ସ୍ୱାଗତ କଲେ ଏବଂ ଖାଇବାକୁ ଦେଲେ। ଲମ୍ବା ଯାତ୍ରା ପରେ ବିଶ୍ରାମ ନେବା ପାଇଁ ଆମେ ସେଠାରେ ରାତି କଟାଇଲୁ।",
+                    "ପରଦିନ ସକାଳେ, ଆମେ ରିଚମଣ୍ଡ, ଓହାଇଓ ଅଭିମୁଖେ ଯାତ୍ରା ଆରମ୍ଭ କଲୁ, ଯେଉଁଠାରେ ମୋ ପୁଅ ରୁହନ୍ତି ଏବଂ କାମ କରନ୍ତି। ସେହି ଡ୍ରାଇଭ୍ ଏକ ନୂଆ ଅନୁଭୂତି ଥିଲା। ଭାରତର ବ୍ୟସ୍ତବହୁଳ ରାସ୍ତାରୁ ଆସିବା ପରେ, ଆମେରିକାର ରାଜପଥ ସ୍ୱପ୍ନ ଭଳି ଲାଗୁଥିଲା। ରାସ୍ତାଗୁଡ଼ିକ ଓସାରିଆ ଥିଲା ଏବଂ ଶୃଙ୍ଖଳିତ ଥିଲା। କିନ୍ତୁ ଯାହା ମୋତେ ସବୁଠାରୁ ଅଧିକ ପ୍ରଭାବିତ କଲା, ତାହା ହେଉଛି ନୀରବତା। କୌଣସି ହର୍ଣ୍ଣ ନାହିଁ।",
+                    "ଶେଷରେ ଆମେ ରିଚମଣ୍ଡରେ ମୋ ପୁଅର ଘରେ ପହଞ୍ଚିଲୁ। ହିଟିଂ ସିଷ୍ଟମ୍ ଆମ ପାଇଁ ଏକ ଆଶ୍ଚର୍ଯ୍ୟ ଥିଲା, ଯାହା ଘର ଭିତରକୁ ଉଷୁମ ରଖୁଥିଲା। <strong>ଓହାଇଓରେ ଏପ୍ରିଲ ମାସରେ ବରଫ ପଡିବା ଦେଖି ଆମେ ବହୁତ ଭାଗ୍ୟବାନ ଥିଲୁ। ଲାଗୁଥିଲା ଯେମିତି ପ୍ରକୃତି ଆମ ଆସିବାକୁ ଅପେକ୍ଷା କରିଥିଲା, ସେହି ବର୍ଷର ଶେଷ ଥର ପାଇଁ ବରଫ ପଡିବା ପାଇଁ। ସେହି ଅନୁଭୂତି ଅତ୍ୟନ୍ତ ଶାନ୍ତ ଥିଲା।</strong> ଆମେରିକାରେ ଏହା ଆମର ପ୍ରଥମ ଦିନ ଥିଲା ଏବଂ ଆମେ ଅନୁଭବ କଲୁ ଯେ ଆମେ ସତରେ ଏଠାରେ ଅଛୁ।",
+                    "ପଡ଼ିଶା ଘରଗୁଡ଼ିକ ସୁନ୍ଦର ଦେଖାଯାଉଥିଲା। ସଜଡ଼ା ଯାଇଥିବା ଘାସ ବଗିଚା, କାଠ ଘର, ଏବଂ ଗୁଣ୍ଡୁଚି ମୂଷାମାନେ ମୁକ୍ତ ଭାବରେ ଦୌଡୁଥିଲେ। ପବନ ସ୍ୱଚ୍ଛ ଏବଂ ଶାନ୍ତ ଥିଲା।",
+                    "ଏହି ପ୍ରଥମ ଅନୁଭୂତି—ଶୃଙ୍ଖଳା, ଶାନ୍ତି, ଏବଂ ଥଣ୍ଡା—ଆମ ଯାତ୍ରାର ଆରମ୍ଭ ଥିଲା। ଆମେ ବୁଲିବା ପାଇଁ ପ୍ରସ୍ତୁତ ଥିଲୁ, କିନ୍ତୁ ବର୍ତ୍ତମାନ ପାଇଁ, ଆମେ ଏକାଠି ଥିବାରୁ ବହୁତ ଖୁସି ଥିଲୁ।"
+                ],
+                audioSrc: "./episode_3_first_impressions/audio_or.mp3"
+            }
+        };
+
+        const elements = {
+            pageTitle: document.getElementById('page-title'),
+            mainTitle: document.getElementById('main-title'),
+            subtitle: document.getElementById('episode-subtitle'),
+            storyText: document.getElementById('story-text'),
+            prevEpLinkText: document.getElementById('prev-ep-link-text'),
+            nextEpLinkText: document.getElementById('next-ep-link-text'),
+            langButtons: document.querySelectorAll('.lang-button')
+        };
+        
+        const audio = document.getElementById('podcast-audio');
+        const icon = document.getElementById('play-btn').querySelector('i');
+        const bars = document.querySelectorAll('.waveform-bar');
+        const progressFill = document.getElementById('progress-fill');
+        const progressContainer = document.getElementById('progress-container');
+        const timeDisplay = document.getElementById('current-time');
+
+        // --- GEMINI API INTEGRATION ---
+        const apiKey = ""; // API Key handled by environment
+
+        async function callGemini(prompt) {
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                return "Sorry, I couldn't connect to the explorer's satellite. Please try again later.";
+            }
+        }
+
+        // --- Feature 1: Quick Summary ---
+        async function generateSummary() {
+            const summaryBox = document.getElementById('summary-content');
+            const btn = document.getElementById('btn-summarize');
+            const storyContent = elements.storyText.innerText;
+            const currentLang = document.documentElement.lang;
+
+            if (summaryBox.classList.contains('active')) {
+                summaryBox.classList.remove('active');
+                return;
+            }
+
+            // Show loading state
+            summaryBox.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+            summaryBox.classList.add('active');
+
+            const prompt = `Summarize the following travel blog story into 3 short, exciting bullet points in the language code '${currentLang}'. use appropriate emojis. Text: ${storyContent}`;
+
+            const summary = await callGemini(prompt);
+            
+            // Render Markdown
+            summaryBox.innerHTML = marked.parse(summary);
+        }
+
+        // --- Feature 2: AI Chatbot ---
+        function toggleChat() {
+            document.getElementById('chat-modal').classList.toggle('open');
+            document.getElementById('chat-input').focus();
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function addMessage(text, sender) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            
+            // Parse markdown for AI responses, plain text for user
+            if (sender === 'ai') {
+                div.innerHTML = marked.parse(text);
+            } else {
+                div.textContent = text;
+            }
+            
+            messagesDiv.appendChild(div);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            input.value = '';
+
+            // Add loading indicator
+            const messagesDiv = document.getElementById('chat-messages');
+            const loaderDiv = document.createElement('div');
+            loaderDiv.className = 'message ai';
+            loaderDiv.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+            loaderDiv.id = 'temp-loader';
+            messagesDiv.appendChild(loaderDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Prepare context
+            const storyContext = elements.storyText.innerText;
+            const prompt = `
+                You are the AI travel companion for 'The Explorer's Tales' blog. 
+                Context of the current episode: "${storyContext}". 
+                User Question: "${text}".
+                
+                Answer the user's question. If it's about the story, use the context provided. 
+                If it's about general travel facts regarding Chicago, Richmond Ohio, or the USA, use your general knowledge.
+                Keep the tone friendly, helpful, and adventurous. Keep answers concise (under 3 sentences if possible).
+            `;
+
+            const response = await callGemini(prompt);
+            
+            // Remove loader and add response
+            document.getElementById('temp-loader').remove();
+            addMessage(response, 'ai');
+        }
+
+
+        // --- Existing Language/Audio Logic ---
+        function setLanguage(lang) {
+            const t = translations[lang];
+            const wasPlaying = !audio.paused;
+            
+            if (audio.src !== t.audioSrc && t.audioSrc) {
+                audio.src = t.audioSrc;
+                if (!t.audioSrc.endsWith('.mp3')) audio.src = ""; 
+                if (wasPlaying && audio.src) audio.play();
+            }
+
+            elements.pageTitle.textContent = t.pageTitle;
+            elements.mainTitle.innerHTML = t.mainTitle;
+            elements.subtitle.textContent = t.subtitle;
+            elements.prevEpLinkText.textContent = t.prevLink;
+            elements.nextEpLinkText.textContent = t.nextLink;
+
+            elements.storyText.innerHTML = t.story.map((p, index) => {
+                const tagClass = index === t.story.length - 1 
+                    ? 'italic text-white font-medium border-l-2 border-[#fbbf24] pl-3 py-1' 
+                    : '';
+                return `<p class="${tagClass}">${p}</p>`;
+            }).join('');
+
+            elements.langButtons.forEach(button => {
+                button.classList.remove('selected');
+                if (button.id === `lang-${lang}`) button.classList.add('selected');
+            });
+            
+            // Clear summary when language changes as it needs regeneration
+            document.getElementById('summary-content').classList.remove('active');
+            
+            document.documentElement.lang = lang === 'hi' ? 'hi-IN' : lang === 'or' ? 'or-IN' : 'en';
+            localStorage.setItem('podcastLang', lang);
+        }
+
+        const waveformContainer = document.getElementById('waveform');
+        const barCount = 40;
+        for (let i = 0; i < barCount; i++) {
+            const bar = document.createElement('div');
+            bar.className = `waveform-bar bar-${(i % 8) + 1}`;
+            bar.style.height = Math.max(15, Math.random() * 80) + '%'; 
+            waveformContainer.appendChild(bar);
+        }
+
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${mins < 10 ? '0' : ''}${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
+
+        function togglePlay() {
+            if (audio.paused) audio.play();
+            else audio.pause();
+        }
+
+        audio.addEventListener('play', () => {
+            icon.classList.remove('fa-play', 'ml-1');
+            icon.classList.add('fa-pause');
+            bars.forEach(bar => bar.classList.add('active'));
+        });
+
+        audio.addEventListener('pause', () => {
+            icon.classList.remove('fa-pause');
+            icon.classList.add('fa-play', 'ml-1');
+            bars.forEach(bar => bar.classList.remove('active'));
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            const percent = (audio.currentTime / audio.duration) * 100 || 0;
+            progressFill.style.width = `${percent}%`;
+            timeDisplay.textContent = formatTime(audio.currentTime);
+        });
+
+        progressContainer.addEventListener('click', (e) => {
+            const width = progressContainer.clientWidth;
+            const clickX = e.offsetX;
+            const duration = audio.duration;
+            audio.currentTime = (clickX / width) * duration;
+        });
+
+        window.skip = function(seconds) { audio.currentTime += seconds; }
+        document.getElementById('play-btn').addEventListener('click', togglePlay);
+
+        const slideshowImage = document.getElementById('slideshow-image');
+        const imageSources = [
+            "./episode_3_first_impressions/pics/highway.JPG", 
+            "./episode_3_first_impressions/pics/friends.JPG",
+            "./episode_3_first_impressions/pics/chicago_toll.JPG",
+            "./episode_3_first_impressions/pics/speed.JPG",
+            "./episode_3_first_impressions/pics/reached.JPG",
+            "./episode_3_first_impressions/pics/apartment.JPG",
+            "./episode_3_first_impressions/pics/snow.JPG",
+            "./episode_3_first_impressions/pics/snow_2.JPG"
+        ];
+        let currentImageIndex = 0;
+        const slideshowIntervalTime = 5000; 
+
+        function changeImage() {
+            slideshowImage.classList.remove('opacity-90');
+            slideshowImage.classList.add('opacity-0');
+            setTimeout(() => {
+                currentImageIndex = (currentImageIndex + 1) % imageSources.length;
+                slideshowImage.src = imageSources[currentImageIndex];
+                slideshowImage.classList.remove('opacity-0');
+                slideshowImage.classList.add('opacity-90');
+            }, 1000); 
+        }
+
+        setTimeout(() => { setInterval(changeImage, slideshowIntervalTime); }, slideshowIntervalTime);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('podcastLang') || 'en';
+            setLanguage(savedLang);
+        });
+    </script>
+</body>
+</html>

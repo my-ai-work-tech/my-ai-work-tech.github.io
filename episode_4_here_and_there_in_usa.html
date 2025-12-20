@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="page-title">The Explorer's Tales - Episode 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Markdown Parser for AI responses -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;700&family=Roboto:wght@300;400;500&family=Noto+Sans+Devanagari:wght@400;700&family=Noto+Sans+Oriya&display=swap');
+
+        :root { --slate-800: #374151; --slate-900: #1f2937; --gold-accent: #fbbf24; }
+        body { font-family: 'Roboto', 'Noto Sans Devanagari', 'Noto Sans Oriya', sans-serif; background-color: #1a1a1a; color: white; overflow-x: hidden; }
+        .font-heading { font-family: 'Oswald', sans-serif; }
+        .language-selector { position: absolute; top: 1rem; right: 1rem; z-index: 50; }
+        .lang-button.selected { background-color: #fbbf24; color: #1a1a1a; font-weight: 700; }
+        .waveform-bar { width: 4px; background-color: rgba(255, 255, 255, 0.6); border-radius: 9999px; animation: wave 1s ease-in-out infinite; animation-play-state: paused; }
+        .waveform-bar.active { background-color: white; animation-play-state: running; }
+        @keyframes wave { 0%, 100% { height: 10%; } 50% { height: 100%; } }
+        .bar-1 { animation-duration: 0.8s; } .bar-2 { animation-duration: 1.1s; } .bar-3 { animation-duration: 1.3s; }
+        .bar-4 { animation-duration: 0.9s; } .bar-5 { animation-duration: 1.2s; } .bar-6 { animation-duration: 0.7s; }
+        .bar-7 { animation-duration: 1.4s; } .bar-8 { animation-duration: 1.0s; }
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #2d3748; } ::-webkit-scrollbar-thumb { background: #718096; border-radius: 3px; }
+        .live-pulse { animation: pulse-red 2s infinite; }
+        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); } 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); } }
+
+        /* --- AI Features Styles --- */
+        .ai-fab {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            background-color: #fbbf24;
+            color: #1f2937;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4);
+            cursor: pointer;
+            z-index: 100;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .ai-fab:hover {
+            transform: scale(1.1) rotate(10deg);
+            box-shadow: 0 6px 20px rgba(251, 191, 36, 0.6);
+        }
+
+        .chat-modal {
+            position: fixed;
+            bottom: 6.5rem;
+            right: 2rem;
+            width: 350px;
+            height: 500px;
+            background-color: #2d3748;
+            border: 1px solid #4a5568;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            transform-origin: bottom right;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            pointer-events: none;
+        }
+        .chat-modal.open {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            pointer-events: all;
+        }
+
+        .chat-header {
+            background-color: #1a202c;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #4a5568;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        .chat-input-area {
+            padding: 1rem;
+            background-color: #1a202c;
+            border-top: 1px solid #4a5568;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        .message.user {
+            background-color: #fbbf24;
+            color: #1f2937;
+            align-self: flex-end;
+            border-bottom-right-radius: 0;
+        }
+        .message.ai {
+            background-color: #4a5568;
+            color: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 0;
+        }
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 8px 12px;
+            background: #4a5568;
+            border-radius: 12px;
+            width: fit-content;
+            align-self: flex-start;
+        }
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #cbd5e0;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out;
+        }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        /* Summary Box */
+        .summary-box {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .summary-box.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="h-screen w-full flex items-center justify-center bg-gray-900 p-0 md:p-8">
+
+    <div class="language-selector md:block hidden flex space-x-2 bg-gray-700 p-2 rounded-lg shadow-lg">
+        <button id="lang-en" onclick="setLanguage('en')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">English</button>
+        <button id="lang-hi" onclick="setLanguage('hi')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">हिन्दी</button>
+        <button id="lang-or" onclick="setLanguage('or')" class="lang-button text-xs px-2 py-1 rounded-md text-gray-300 hover:bg-gray-600 transition">ଓଡ଼ିଆ</button>
+    </div>
+
+    <div class="bg-slate-700 w-full max-w-6xl h-full md:h-[90vh] rounded-none md:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row relative">
+        <div class="w-full md:w-1/2 bg-[#3b4455] p-6 md:p-10 flex flex-col justify-between h-full relative z-10 overflow-y-auto">
+            <div class="mb-6">
+                <h1 class="font-heading text-4xl md:text-5xl font-bold tracking-tight text-white mb-2 uppercase leading-none" id="main-title">The<br>Explorer's Tales</h1>
+                <p class="text-[#fbbf24] text-lg font-medium tracking-wide" id="episode-subtitle">Episode 4: Here and There in USA</p>
+            </div>
+
+            <div class="bg-[#2d3646] p-4 rounded-xl mb-6 shadow-inner border border-gray-600/30">
+                <audio id="podcast-audio" src=""></audio>
+                <div class="h-12 flex items-center justify-center gap-1 mb-4 w-full px-2" id="waveform"></div>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-gray-400 font-mono" id="current-time">00:00</span>
+                    <div class="flex items-center gap-6">
+                        <button class="text-gray-400 hover:text-white transition" onclick="skip(-10)"><i class="fas fa-step-backward"></i></button>
+                        <button id="play-btn" class="w-12 h-12 flex items-center justify-center rounded-full border-2 border-white text-white hover:bg-white hover:text-gray-900 transition duration-300"><i class="fas fa-play ml-1"></i></button>
+                        <button class="text-gray-400 hover:text-white transition" onclick="skip(10)"><i class="fas fa-step-forward"></i></button>
+                    </div>
+                    <button class="text-gray-400 hover:text-white transition"><i class="far fa-comment-alt"></i></button>
+                </div>
+                <div class="w-full bg-gray-600 h-1 rounded-full overflow-hidden cursor-pointer group" id="progress-container">
+                    <div id="progress-fill" class="bg-white h-full w-[0%] group-hover:bg-[#fbbf24] transition-all duration-100 ease-linear"></div>
+                </div>
+            </div>
+
+            <!-- AI Summary Button -->
+            <div class="mb-4">
+                <button id="btn-summarize" onclick="generateSummary()" class="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#fbbf24] hover:text-white transition border border-[#fbbf24] px-3 py-1.5 rounded hover:bg-[#fbbf24] hover:text-gray-900">
+                    <i class="fas fa-magic"></i> ✨ Quick Summary
+                </button>
+                <div id="summary-content" class="summary-box mt-2">
+                    <!-- Summary injected here -->
+                </div>
+            </div>
+
+            <div class="space-y-4 text-gray-300 font-light leading-relaxed text-sm md:text-base overflow-y-auto pr-2 custom-scrollbar" id="story-text"></div>
+            
+            <div class="pt-4 mt-4 border-t border-gray-600/50 flex flex-col gap-4">
+                <div class="flex justify-between">
+                    <a href="episode_3_first_impressions.html" class="text-sm font-medium text-gray-400 hover:text-white transition duration-200 flex items-center gap-2"><i class="fas fa-arrow-left"></i> <span id="prev-ep-link-text">Previous Episode</span></a>
+                    <a href="episode_5_trip_to_niagara_falls.html" class="text-sm font-medium text-[#fbbf24] hover:text-white transition duration-200 flex items-center gap-2"><span id="next-ep-link-text">Next Episode</span> <i class="fas fa-arrow-right"></i></a>
+                </div>
+                <div class="flex flex-col items-center gap-2 mt-2 pt-4 border-t border-gray-600/30">
+                    <span id="follow-us-text" class="text-[10px] uppercase tracking-widest text-gray-500 font-bold">Follow Us</span>
+                    <div class="flex gap-6">
+                        <a href="https://www.facebook.com/share/1PrNyjm3TK/" class="text-gray-400 hover:text-[#1877F2] hover:scale-110 transition"><i class="fab fa-facebook fa-lg"></i></a>
+                        <a href="https://www.instagram.com/drbasantabehera?utm_source=qr&igsh=MW9zbjI5bGZkeGNudw==" class="text-gray-400 hover:text-[#E4405F] hover:scale-110 transition"><i class="fab fa-instagram fa-lg"></i></a>
+                        <a href="https://youtube.com/@drbasantabehera1276?si=W5xkCeNhOqF0m5rn" class="text-gray-400 hover:text-[#FF0000] hover:scale-110 transition"><i class="fab fa-youtube fa-lg"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute bottom-0 left-0 w-full h-12 bg-gradient-to-t from-[#3b4455] to-transparent pointer-events-none md:block hidden"></div>
+        </div>
+
+        <div class="w-full md:w-1/2 relative h-96 md:h-full bg-black flex flex-col border-l border-gray-800">
+            <div class="relative w-full h-1/2 overflow-hidden group">
+                <div class="absolute top-4 right-4 z-20 flex items-center gap-2 bg-red-600/90 text-white px-3 py-1 rounded text-xs font-bold tracking-wider shadow-lg backdrop-blur-sm">
+                    <div class="w-2 h-2 bg-white rounded-full live-pulse"></div> ON AIR
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-r from-[#3b4455] via-transparent to-transparent opacity-40 z-10 pointer-events-none"></div>
+                <img src="./podcast_studio.JPEG" alt="Studio" class="absolute inset-0 w-full h-full object-cover opacity-90">
+                <div class="absolute bottom-3 left-3 z-20 bg-black/60 px-2 py-1 rounded text-[10px] font-bold tracking-widest text-white/90 uppercase border-l-2 border-[#fbbf24]">Suburban Life</div>
+            </div>
+            <div class="relative w-full h-1/2 overflow-hidden border-t-2 border-gray-800">
+                <div class="absolute inset-0 bg-gradient-to-r from-[#3b4455] via-transparent to-transparent opacity-30 z-10 pointer-events-none"></div>
+                <img id="slideshow-image" src="./episode_4_here_and_there_in_usa/pics/temple.JPG" alt="Here and There" class="absolute inset-0 w-full h-full object-cover object-center opacity-90 transition-opacity duration-1000 ease-in-out">
+                <div class="absolute bottom-3 left-3 z-20 bg-black/60 px-2 py-1 rounded text-[10px] font-bold tracking-widest text-white/90 uppercase border-l-2 border-blue-400">Local Exploring</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Floating Action Button -->
+    <div class="ai-fab" onclick="toggleChat()">
+        <i class="fas fa-robot fa-lg"></i>
+    </div>
+
+    <!-- AI Chat Modal -->
+    <div class="chat-modal" id="chat-modal">
+        <div class="chat-header">
+            <h3 class="font-heading text-sm font-bold text-white tracking-wider uppercase"><i class="fas fa-sparkles text-[#fbbf24] mr-2"></i> Cultural Companion</h3>
+            <button onclick="toggleChat()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="chat-messages custom-scrollbar" id="chat-messages">
+            <div class="message ai">
+                Namaste! I'm your guide to American culture. Ask me about the temple, shopping, or the food we explored today! 🕉️🛒
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Ask a question..." class="flex-1 bg-gray-700 text-white rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#fbbf24]" onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()" class="bg-[#fbbf24] text-gray-900 rounded px-3 hover:bg-yellow-400 transition"><i class="fas fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        const translations = {
+            'en': {
+                pageTitle: "The Explorer's Tales - Episode 4",
+                mainTitle: "The<br>Explorer's Tales",
+                subtitle: "Episode 4: Here and There in USA",
+                prevLink: "Previous: First Impressions",
+                nextLink: "Next: Niagara Falls",
+                story: [
+                    "Our day began with a touch of divine grace. We visited a serene Hindu temple in Ohio to seek blessings from the Almighty. The peaceful atmosphere and familiar chants made us feel spiritually connected, providing a calm and auspicious start before stepping out to explore the bustling American life.",
+                    "Settling in meant getting out. We couldn't just stay inside, so we began exploring 'Here and There'—the local life of suburban America. The scale of everything continued to amaze us.",
+                    "Our shopping exploration was extensive. Entering <strong>Walmart</strong> felt like stepping into an indoor stadium; the sheer size was overwhelming. The aisles were wide and meticulously organized—groceries on one side, electronics on the other, and clothes in between. Next, we visited <strong>Best Buy</strong>, a paradise for tech lovers. It was vast, with high ceilings and rows of gadgets. Massive TVs were displayed on walls like art, and laptops were laid out for anyone to touch and try. <strong>Home Depot</strong> was equally impressive with its massive collection of tools.",
+                    "Amidst these American giants, finding an <strong>Indian Grocery store</strong> was a heartwarming experience. The familiar scent of spices and the sight of Indian vegetables made us feel at home. We bought our essential spices, ensuring our kitchen in the US smelled just like the one in India.",
+                    "We also visited the local parks. Unlike the crowded parks we were used to, these were vast stretches of green, often empty but for a few joggers. The lakes were pristine, reflecting the clear blue sky. It was peaceful, almost too peaceful for someone used to the hustle of Indian cities.",
+                    "One interesting observation was the 'Self-Checkout' counters, especially at Walmart. The idea that you scan the barcode of each item yourself, hear the 'beep', and bag it without a cashier was fascinating. It was a bit intimidating at first—worrying if we missed an item—but we quickly learned the rhythm.",
+                    "The culinary variety was another surprise. We explored the diverse food scene, customizing sandwiches at <strong>Subway</strong>, enjoying Mexican flavors at <strong>Chipotle</strong>, and tasting global pasta dishes at <strong>Noodles & Company</strong>. We also savored authentic <strong>Thai</strong> and <strong>Chinese</strong> cuisines. Tasting these different foods felt like experiencing a melting pot of cultures right on our plates.",
+                    "Exploring the malls was another highlight. They aren't just shops; they are indoor cities. We walked for hours, window shopping and observing the diverse mix of people. It was a simple joy, just being 'here and there,' soaking in the daily rhythm of American life."
+                ],
+                audioSrc: "./episode_4_here_and_there_in_usa/aud_vid/audio_en.mp3" 
+            },
+            'hi': {
+                pageTitle: "द एक्सप्लोरर टेल्स - एपिसोड 4",
+                mainTitle: "द<br>एक्सप्लोरर टेल्स",
+                subtitle: "एपिसोड 4: अमेरिका में यहाँ और वहाँ",
+                prevLink: "पिछला: पहली छाप",
+                nextLink: "अगला: नियाग्रा फॉल्स",
+                story: [
+                    "हमारे दिन की शुरुआत ओहियो के एक सुंदर हिंदू मंदिर में दर्शन और ईश्वर के आशीर्वाद के साथ हुई। वहां का शांत वातावरण और मंत्रोच्चार सुनकर मन को बहुत शांति मिली। इस आध्यात्मिक शुरुआत ने हमें आगे के दिन के लिए नई ऊर्जा दी और हमें घर जैसा महसूस कराया।",
+                    "बसने का मतलब था बाहर निकलना। हम सिर्फ अंदर नहीं रह सकते थे, इसलिए हमने 'यहाँ और वहाँ' घूमना शुरू किया—उपनगरीय अमेरिका का स्थानीय जीवन। हर चीज़ का विशाल आकार हमें लगातार चकित कर रहा था।",
+                    "हमारी खरीदारी की खोज व्यापक थी। **वॉलमार्ट (Walmart)** में प्रवेश करना किसी स्टेडियम में कदम रखने जैसा लगा; इसका विशाल आकार देखकर हम दंग रह गए। गलियारे बहुत चौड़े थे और सब कुछ व्यवस्थित था—एक तरफ राशन, दूसरी तरफ इलेक्ट्रॉनिक्स। इसके बाद हम **बेस्ट बाय (Best Buy)** गए, जो तकनीक प्रेमियों के लिए स्वर्ग जैसा था। वहां बड़ी-बड़ी टीवी दीवारों पर लगी थीं और लैपटॉप सजाकर रखे गए थे ताकि कोई भी उन्हें चलाकर देख सके। **होम डिपो (Home Depot)** भी अपने औजारों के संग्रह के साथ अद्भुत था।",
+                    "इन अमेरिकी दिग्गजों के बीच, एक <strong>भारतीय किराने की दुकान</strong> मिलना एक सुखद अनुभव था। मसालों की जानी-पहचानी महक और भारतीय सब्जियों को देखकर हमें घर जैसा महसूस हुआ। हमने अपने आवश्यक मसाले खरीदे, यह सुनिश्चित करते हुए कि अमेरिका में हमारी रसोई बिल्कुल भारत जैसी महके।",
+                    "हमने स्थानीय पार्कों का भी दौरा किया। जिन भीड़भाड़ वाले पार्कों के हम आदी थे, उनके विपरीत, ये हरियाली के विशाल विस्तार थे, जो अक्सर कुछ जॉगर्स को छोड़कर खाली रहते थे। झीलें प्राचीन थीं, जिनमें साफ नीला आकाश दिखाई देता था। यह शांतिपूर्ण था, भारतीय शहरों की हलचल के आदी किसी व्यक्ति के लिए शायद बहुत अधिक शांतिपूर्ण।",
+                    "एक दिलचस्प अवलोकन 'सेल्फ-चेकआउट' काउंटर था, खासकर वॉलमार्ट में। यह विचार कि आप खुद हर सामान का बारकोड स्कैन करें, 'बीप' की आवाज सुनें और उसे थैले में डालें, बहुत रोमांचक था। शुरू में यह थोड़ा डरावना लगा कि कहीं कुछ छूट न जाए, लेकिन हमने जल्दी ही सीख लिया।",
+                    "खान-पान की विविधता भी एक सुखद आश्चर्य थी। हम केवल घर के बने खाने तक ही सीमित नहीं रहे; हमने स्थानीय भोजन का भी आनंद लिया। हमने **सबवे (Subway)** में अपनी पसंद के सैंडविच बनवाए, **चिपोटल (Chipotle)** में मैक्सिकन स्वाद चखा, और **नूडल्स एंड कंपनी (Noodles & Company)** में वैश्विक पास्ता व्यंजनों का लुत्फ उठाया। हमने असली **थाई** और **चीनी** व्यंजनों का भी स्वाद लिया। इन अलग-अलग तरह के खानों को चखना ऐसा लगा जैसे हम अपनी थाली में ही विभिन्न संस्कृतियों का अनुभव कर रहे हों।",
+                    "मॉलों की खोज करना एक और आकर्षण था। वे सिर्फ दुकानें नहीं हैं; वे इनडोर शहर हैं। हम घंटों चले, विंडो शॉपिंग की और लोगों के विविध मिश्रण को देखा। बस 'यहाँ और वहाँ' होना और अमेरिकी जीवन की दैनिक लय में डूबना एक साधारण खुशी थी।"
+                ],
+                audioSrc: "./episode_4_here_and_there_in_usa/aud_vid/audio_hi.mp3"
+            },
+            'or': {
+                pageTitle: "ଦି ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ - ଏପିସୋଡ୍ ୪",
+                mainTitle: "ଦି<br>ଏକ୍ସପ୍ଲୋରର୍ସ ଟେଲ୍ସ",
+                subtitle: "ଏପିସୋଡ୍ ୪: ଆମେରିକାରେ ଏଠି ଓ ସେଠି",
+                prevLink: "ପୂର୍ବ: ପ୍ରଥମ ଛାପ",
+                nextLink: "ପରବର୍ତ୍ତୀ: ନିଆଗ୍ରା ଫଲ୍ସ",
+                story: [
+                    "ଆମର ଦିନଟି ଓହାଇଓର ଏକ ସୁନ୍ଦର ହିନ୍ଦୁ ମନ୍ଦିର ଦର୍ଶନରୁ ଆରମ୍ଭ ହେଲା। ଆମେ ସେଠାରେ ଭଗବାନଙ୍କ ଆଶୀର୍ବାଦ ନେଲୁ। ମନ୍ଦିରର ଶାନ୍ତ ପରିବେଶ ଆମ ମନକୁ ବହୁତ ଖୁସି କରିଦେଲା ଏବଂ ଆମକୁ ଘର କଥା ମନେ ପକାଇଦେଲା। ଏହା ଆମ ଯାତ୍ରା ପାଇଁ ଏକ ଶୁଭ ଆରମ୍ଭ ଥିଲା।",
+                    "ରହିବାର ଅର୍ଥ ଥିଲା ବାହାରକୁ ବାହାରିବା। ଆମେ କେବଳ ଘର ଭିତରେ ରହିପାରିଲୁ ନାହିଁ, ତେଣୁ ଆମେ 'ଏଠି ଓ ସେଠି' ବୁଲିବା ଆରମ୍ଭ କଲୁ। ସବୁକିଛିର ଆକାର ଆମକୁ ଆଶ୍ଚର୍ଯ୍ୟ କରିଦେଇଥିଲା।",
+                    "ଆମର କିଣାକିଣି ଅଭିଜ୍ଞତା ବହୁତ ବଢିଆ ଥିଲା। **ୱାଲମାର୍ଟ (Walmart)** ଭିତରକୁ ଯିବା ଗୋଟେ ଷ୍ଟାଡିୟମରେ ପଶିବା ଭଳି ଲାଗିଲା; ଏହାର ବିଶାଳ ଆକାର ଆମକୁ ଆଶ୍ଚର୍ଯ୍ୟ କରିଦେଲା। ଦୋକାନଟି ବହୁତ ସୁନ୍ଦର ଭାବରେ ସଜା ହୋଇଥିଲା। ଏହା ପରେ ଆମେ **ବେଷ୍ଟ ବାଏ (Best Buy)** ଯାଇଥିଲୁ, ଯାହା ଟେକ୍ନୋଲୋଜି ପ୍ରେମୀଙ୍କ ପାଇଁ ସ୍ୱର୍ଗ ଭଳି ଥିଲା। ବଡ଼ ବଡ଼ ଟିଭି କାନ୍ଥରେ ଲାଗିଥିଲା ଏବଂ ଲାପଟପ୍ ସବୁ ଚଳାଇ ଦେଖିବା ପାଇଁ ରଖାଯାଇଥିଲା। **ହୋମ୍ ଡିପୋ (Home Depot)** ମଧ୍ୟ ବହୁତ ବଡ଼ ଥିଲା।",
+                    "ଏତେ ସବୁ ବିଦେଶୀ ଦୋକାନ ଭିତରେ, ଗୋଟିଏ <strong>ଭାରତୀୟ ଦୋକାନ</strong> ପାଇବା ଆମ ପାଇଁ ବହୁତ ଖୁସିର କଥା ଥିଲା। ମସଲାର ବାସ୍ନା ଏବଂ ଭାରତୀୟ ପରିବା ଦେଖି ଆମକୁ ଘର କଥା ମନେ ପଡିଗଲା। ଆମେ ସେଠାରୁ ଆମର ଦରକାରୀ ମସଲା କିଣିଲୁ।",
+                    "ଆମେ ସ୍ଥାନୀୟ ପାର୍କ ମଧ୍ୟ ବୁଲିବାକୁ ଯାଇଥିଲୁ। ଆମେ ଯେଉଁ ଭିଡ଼ ପାର୍କ ଦେଖି ଅଭ୍ୟସ୍ତ ଥିଲୁ, ଏହା ତା’ଠାରୁ ସମ୍ପୂର୍ଣ୍ଣ ଅଲଗା ଥିଲା। ଏହା ବହୁତ ଶାନ୍ତ ଏବଂ ସବୁଜିମାରେ ଭରପୂର ଥିଲା। ହ୍ରଦଗୁଡ଼ିକ ସ୍ୱଚ୍ଛ ଥିଲା।",
+                    "ଏକ ମଜାଦାର କଥା ଥିଲା 'ସେଲ୍ଫ-ଚେକଆଉଟ୍'। ବିଶେଷକରି ୱାଲମାର୍ଟରେ, ନିଜେ ଜିନିଷର ବାରକୋଡ୍ ସ୍କାନ୍ କରିବା ଏବଂ ପ୍ୟାକ୍ କରିବା ଏକ ନୂଆ ଅନୁଭୂତି ଥିଲା। ପ୍ରଥମେ ଟିକେ ଡର ଲାଗୁଥିଲା ଯେ କାଳେ କିଛି ଭୁଲ୍ ହୋଇଯିବ, କିନ୍ତୁ ଆମେ ଶୀଘ୍ର ଶିଖିଗଲୁ।",
+                    "ଖାଦ୍ୟର ବିବିଧତା ମଧ୍ୟ ଆମକୁ ଆଶ୍ଚର୍ଯ୍ୟ କରିଦେଲା। ଆମେ କେବଳ ଘର ରନ୍ଧା ଖାଦ୍ୟ ଖାଇନଥିଲୁ; ଆମେ ବାହାର ଖାଦ୍ୟର ମଧ୍ୟ ମଜା ନେଲୁ। ଆମେ **ସବ୍‌ୱେ (Subway)** ରେ ନିଜ ପସନ୍ଦର ସ୍ୟାଣ୍ଡୱିଚ୍, **ଚିପୋଟଲ୍ (Chipotle)** ରେ ମେକ୍ସିକାନ୍ ଖାଦ୍ୟ, ଏବଂ **ନୁଡୁଲ୍ସ ଆଣ୍ଡ କମ୍ପାନୀ (Noodles & Company)** ରେ ପାସ୍ତା ଖାଇଲୁ। ଆମେ **ଥାଇ** ଏବଂ **ଚାଇନିଜ୍** ଖାଦ୍ୟର ସ୍ୱାଦ ମଧ୍ୟ ନେଲୁ। ଏହି ଭିନ୍ନ ଭିନ୍ନ ଖାଦ୍ୟ ଚାଖିବା ଦ୍ୱାରା ଲାଗିଲା ଯେମିତି ଆମେ ଗୋଟିଏ ଜାଗାରେ ଅନେକ ସଂସ୍କୃତିର ଅନୁଭବ କରୁଛୁ।",
+                    "ମଲ୍ ବୁଲିବା ଅନ୍ୟ ଏକ ଆକର୍ଷଣ ଥିଲା। ସେଗୁଡ଼ିକ କେବଳ ଦୋକାନ ନୁହେଁ; ସେଗୁଡ଼ିକ ଛୋଟ ସହର ଭଳି। ଆମେ ଘଣ୍ଟା ଘଣ୍ଟା ଧରି ବୁଲିଲୁ ଏବଂ ବିଭିନ୍ନ ପ୍ରକାରର ଲୋକଙ୍କୁ ଦେଖିଲୁ।"
+                ],
+                audioSrc: "./episode_4_here_and_there_in_usa/aud_vid/audio_or.mp3"
+            }
+        };
+
+        const elements = { pageTitle: document.getElementById('page-title'), mainTitle: document.getElementById('main-title'), subtitle: document.getElementById('episode-subtitle'), storyText: document.getElementById('story-text'), prevEpLinkText: document.getElementById('prev-ep-link-text'), nextEpLinkText: document.getElementById('next-ep-link-text'), langButtons: document.querySelectorAll('.lang-button') };
+        const audio = document.getElementById('podcast-audio');
+        const icon = document.getElementById('play-btn').querySelector('i');
+        const bars = document.querySelectorAll('.waveform-bar');
+        const progressFill = document.getElementById('progress-fill');
+        const progressContainer = document.getElementById('progress-container');
+        const timeDisplay = document.getElementById('current-time');
+
+        // --- GEMINI API INTEGRATION ---
+        const apiKey = ""; // API Key handled by environment
+
+        async function callGemini(prompt) {
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: prompt }] }]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.candidates[0].content.parts[0].text;
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                return "Sorry, I couldn't connect to the explorer's satellite. Please try again later.";
+            }
+        }
+
+        // --- Feature 1: Quick Summary ---
+        async function generateSummary() {
+            const summaryBox = document.getElementById('summary-content');
+            const storyContent = elements.storyText.innerText;
+            const currentLang = document.documentElement.lang;
+
+            if (summaryBox.classList.contains('active')) {
+                summaryBox.classList.remove('active');
+                return;
+            }
+
+            // Show loading state
+            summaryBox.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+            summaryBox.classList.add('active');
+
+            const prompt = `Summarize the following travel blog story into 3 short, exciting bullet points in the language code '${currentLang}'. use appropriate emojis. Text: ${storyContent}`;
+
+            const summary = await callGemini(prompt);
+            
+            // Render Markdown
+            summaryBox.innerHTML = marked.parse(summary);
+        }
+
+        // --- Feature 2: AI Chatbot ---
+        function toggleChat() {
+            document.getElementById('chat-modal').classList.toggle('open');
+            document.getElementById('chat-input').focus();
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') sendMessage();
+        }
+
+        function addMessage(text, sender) {
+            const messagesDiv = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = `message ${sender}`;
+            
+            // Parse markdown for AI responses, plain text for user
+            if (sender === 'ai') {
+                div.innerHTML = marked.parse(text);
+            } else {
+                div.textContent = text;
+            }
+            
+            messagesDiv.appendChild(div);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            input.value = '';
+
+            // Add loading indicator
+            const messagesDiv = document.getElementById('chat-messages');
+            const loaderDiv = document.createElement('div');
+            loaderDiv.className = 'message ai';
+            loaderDiv.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+            loaderDiv.id = 'temp-loader';
+            messagesDiv.appendChild(loaderDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Prepare context
+            const storyContext = elements.storyText.innerText;
+            const prompt = `
+                You are the AI travel companion for 'The Explorer's Tales' blog. 
+                Context of the current episode: "${storyContext}". 
+                User Question: "${text}".
+                
+                Answer the user's question. If it's about the story, use the context provided. 
+                If it's about general travel facts regarding Walmart, Best Buy, Indian temples in USA, or diverse food options, use your general knowledge.
+                Keep the tone friendly, helpful, and adventurous. Keep answers concise (under 3 sentences if possible).
+            `;
+
+            const response = await callGemini(prompt);
+            
+            // Remove loader and add response
+            document.getElementById('temp-loader').remove();
+            addMessage(response, 'ai');
+        }
+
+        function setLanguage(lang) {
+            const t = translations[lang];
+            const wasPlaying = !audio.paused;
+            if (audio.src !== t.audioSrc && t.audioSrc) { audio.src = t.audioSrc; if (wasPlaying) audio.play(); }
+            elements.pageTitle.textContent = t.pageTitle; elements.mainTitle.innerHTML = t.mainTitle; elements.subtitle.textContent = t.subtitle; elements.prevEpLinkText.textContent = t.prevLink; elements.nextEpLinkText.textContent = t.nextLink;
+            elements.storyText.innerHTML = t.story.map((p, i) => `<p class="${i === t.story.length - 1 ? 'italic text-white font-medium border-l-2 border-[#fbbf24] pl-3 py-1' : ''}">${p}</p>`).join('');
+            elements.langButtons.forEach(b => { b.classList.remove('selected'); if (b.id === `lang-${lang}`) b.classList.add('selected'); });
+            
+             // Clear summary when language changes as it needs regeneration
+             document.getElementById('summary-content').classList.remove('active');
+
+            document.documentElement.lang = lang === 'hi' ? 'hi-IN' : lang === 'or' ? 'or-IN' : 'en';
+            localStorage.setItem('podcastLang', lang);
+        }
+
+        const waveformContainer = document.getElementById('waveform');
+        for (let i = 0; i < 40; i++) { const bar = document.createElement('div'); bar.className = `waveform-bar bar-${(i % 8) + 1}`; bar.style.height = Math.max(15, Math.random() * 80) + '%'; waveformContainer.appendChild(bar); }
+        function formatTime(s) { const m = Math.floor(s / 60); const sc = Math.floor(s % 60); return `${m < 10 ? '0' : ''}${m}:${sc < 10 ? '0' : ''}${sc}`; }
+        function togglePlay() { if (audio.paused) audio.play(); else audio.pause(); }
+        audio.addEventListener('play', () => { icon.classList.replace('fa-play', 'fa-pause'); icon.classList.remove('ml-1'); bars.forEach(b => b.classList.add('active')); });
+        audio.addEventListener('pause', () => { icon.classList.replace('fa-pause', 'fa-play'); icon.classList.add('ml-1'); bars.forEach(b => b.classList.remove('active')); });
+        audio.addEventListener('timeupdate', () => { progressFill.style.width = `${(audio.currentTime / audio.duration) * 100 || 0}%`; timeDisplay.textContent = formatTime(audio.currentTime); });
+        progressContainer.addEventListener('click', (e) => { audio.currentTime = (e.offsetX / progressContainer.clientWidth) * audio.duration; });
+        window.skip = (s) => audio.currentTime += s;
+        document.getElementById('play-btn').addEventListener('click', togglePlay);
+
+        const slideshowImage = document.getElementById('slideshow-image');
+        const imageSources = [
+	"./episode_4_here_and_there_in_usa/pics/landscape.JPG", 
+	"./episode_4_here_and_there_in_usa/pics/walmart.JPG",
+	 "./episode_4_here_and_there_in_usa/pics/bestbuy.JPG",
+	"./episode_4_here_and_there_in_usa/pics/backyard.JPG", 
+	"./episode_4_here_and_there_in_usa/pics/mall.JPG",
+	 "./episode_4_here_and_there_in_usa/pics/noodles_2.JPG",
+	"./episode_4_here_and_there_in_usa/pics/noodles.JPG", 
+	"./episode_4_here_and_there_in_usa/pics/indianfood.JPG",
+	 "./episode_4_here_and_there_in_usa/pics/indianfood_2.JPG",
+	"./episode_4_here_and_there_in_usa/pics/backyard.JPG", 
+	"./episode_4_here_and_there_in_usa/pics/house.JPG",
+	 "./episode_4_here_and_there_in_usa/pics/corn_park.JPG",
+	"./episode_4_here_and_there_in_usa/pics/rabbit_park.JPG", 
+	 "./episode_4_here_and_there_in_usa/pics/car_driving.JPG",
+	"./episode_4_here_and_there_in_usa/pics/gym.JPG", 
+	"./episode_4_here_and_there_in_usa/pics/gym_2.JPG",
+	 "./episode_4_here_and_there_in_usa/pics/gym_3.JPG",
+	"./episode_4_here_and_there_in_usa/pics/snooker.JPG",
+	 "./episode_4_here_and_there_in_usa/pics/parking.JPG"
+	];
+        let currentImageIndex = 0;
+        setTimeout(() => { setInterval(() => { slideshowImage.classList.add('opacity-0'); setTimeout(() => { currentImageIndex = (currentImageIndex + 1) % imageSources.length; slideshowImage.src = imageSources[currentImageIndex]; slideshowImage.classList.remove('opacity-0'); }, 1000); }, 5000); }, 5000);
+        document.addEventListener('DOMContentLoaded', () => setLanguage(localStorage.getItem('podcastLang') || 'en'));
+    </script>
+</body>
+</html>
