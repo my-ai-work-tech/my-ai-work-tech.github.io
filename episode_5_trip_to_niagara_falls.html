@@ -176,7 +176,13 @@
         document.getElementById('play-btn').addEventListener('click', togglePlay);
 
         const slideshowImage = document.getElementById('slideshow-image');
-        const imageSources = ["https://images.unsplash.com/photo-1544464168-d057a75908b9?q=80&w=2070&auto=format&fit=crop", "https://images.unsplash.com/photo-1636207543865-acf5ad3e3629?q=80&w=2070&auto=format&fit=crop", "https://images.unsplash.com/photo-1534067783865-9c565a9ec674?q=80&w=2187&auto=format&fit=crop"];
+        const imageSources = [
+            "./episode_5_niagara/pics/Entrance.JPG", 
+            "./episode_5_niagara/pics/Night.JPG",
+            "./episode_5_niagara/pics/USA_CANADA.JPG",
+            "./episode_5_niagara/pics/View.JPG",
+            "./episode_5_niagara/pics/Maid_of_mist.JPG",
+        ];
         let currentImageIndex = 0;
         setTimeout(() => { setInterval(() => { slideshowImage.classList.add('opacity-0'); setTimeout(() => { currentImageIndex = (currentImageIndex + 1) % imageSources.length; slideshowImage.src = imageSources[currentImageIndex]; slideshowImage.classList.remove('opacity-0'); }, 1000); }, 5000); }, 5000);
         document.addEventListener('DOMContentLoaded', () => setLanguage(localStorage.getItem('podcastLang') || 'en'));
