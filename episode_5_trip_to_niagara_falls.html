@@ -82,7 +82,7 @@
                     <div class="w-2 h-2 bg-white rounded-full live-pulse"></div> ON AIR
                 </div>
                 <div class="absolute inset-0 bg-gradient-to-r from-[#3b4455] via-transparent to-transparent opacity-40 z-10 pointer-events-none"></div>
-                <img src="https://images.unsplash.com/photo-1579624538806-25e24a568297?q=80&w=2070&auto=format&fit=crop" alt="Niagara Falls" class="absolute inset-0 w-full h-full object-cover opacity-90">
+                <img src="./podcast_studio.JPEG" alt="Niagara Falls" class="absolute inset-0 w-full h-full object-cover opacity-90">
                 <div class="absolute bottom-3 left-3 z-20 bg-black/60 px-2 py-1 rounded text-[10px] font-bold tracking-widest text-white/90 uppercase border-l-2 border-[#fbbf24]">Nature's Fury</div>
             </div>
             <div class="relative w-full h-1/2 overflow-hidden border-t-2 border-gray-800">
@@ -176,7 +176,13 @@
         document.getElementById('play-btn').addEventListener('click', togglePlay);
 
         const slideshowImage = document.getElementById('slideshow-image');
-        const imageSources = ["https://images.unsplash.com/photo-1544464168-d057a75908b9?q=80&w=2070&auto=format&fit=crop", "https://images.unsplash.com/photo-1636207543865-acf5ad3e3629?q=80&w=2070&auto=format&fit=crop", "https://images.unsplash.com/photo-1534067783865-9c565a9ec674?q=80&w=2187&auto=format&fit=crop"];
+        const imageSources = [
+            "./episode_5_niagara/pics/Entrance.JPG", 
+            "./episode_5_niagara/pics/Night.JPG",
+            "./episode_5_niagara/pics/USA_CANADA.JPG",
+            "./episode_5_niagara/pics/View.JPG",
+            "./episode_5_niagara/pics/Maid_of_mist.JPG",
+        ];
         let currentImageIndex = 0;
         setTimeout(() => { setInterval(() => { slideshowImage.classList.add('opacity-0'); setTimeout(() => { currentImageIndex = (currentImageIndex + 1) % imageSources.length; slideshowImage.src = imageSources[currentImageIndex]; slideshowImage.classList.remove('opacity-0'); }, 1000); }, 5000); }, 5000);
         document.addEventListener('DOMContentLoaded', () => setLanguage(localStorage.getItem('podcastLang') || 'en'));
